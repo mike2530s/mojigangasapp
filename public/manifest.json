@@ -1,0 +1,21 @@
+{
+  "name": "Mojigangas: Tradición Viva",
+  "short_name": "Mojigangas",
+  "description": "Plataforma cultural para preservar la tradición de las Mojigangas mexicanas",
+  "start_url": "/home",
+  "display": "standalone",
+  "background_color": "#F8F5E6",
+  "theme_color": "#FF005C",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,27 +1,248 @@
+/* ═══════════════════════════════════════════════════════
+ * 🎭 Mojigangas: Tradición Viva — Estilos Globales
+ * ═══════════════════════════════════════════════════════ */
+
+/* ── Tailwind Layers ──────────────────────────────────── */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── Google Fonts ─────────────────────────────────────── */
+/* Las fuentes se cargan vía next/font/google en layout.tsx
+   para mejor rendimiento (sin request bloqueante).       */
+
+/* ═══════════════════════════════════════════════════════
+ * 🎨  Variables CSS — Paleta y tokens reutilizables
+ * ═══════════════════════════════════════════════════════ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --mexican-pink: #FF005C;
+  --fiesta-yellow: #FFD600;
+  --fiesta-cyan: #00E5FF;
+  --fiesta-ink: #1A1A1A;
+  --paper-white: #F8F5E6;
+  --fiesta-purple: #9C27B0;
+  --shadow-hard: 6px 6px 0px #1A1A1A;
+  --shadow-hard-sm: 4px 4px 0px #1A1A1A;
+  --shadow-hard-lg: 8px 8px 0px #1A1A1A;
+  --bottom-nav-height: 5rem;
+  --background: #F8F5E6;
+  --foreground: #1A1A1A;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ═══════════════════════════════════════════════════════
+ * 🧱  Reset y tipografía global (fuera de @layer para
+ *     evitar conflictos con PostCSS)
+ * ═══════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--fiesta-ink);
+  background-color: var(--paper-white);
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h40v40H0z' fill='none'/%3E%3Cpath d='M0 20h40M20 0v40' stroke='%23e8e4d4' stroke-width='0.5'/%3E%3C/svg%3E");
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Playfair Display", serif;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ═══════════════════════════════════════════════════════
+ * 🧩  Components — Clases reutilizables del diseño
+ * ═══════════════════════════════════════════════════════ */
+
+/* Tarjeta base con sombra dura estilo recorte */
+.card-base {
+  @apply bg-white rounded-card shadow-hard overflow-hidden;
+}
+
+/* Tarjeta polaroid — para el catálogo */
+.card-polaroid {
+  @apply bg-white p-3 pb-8 shadow-hard;
+  transform: rotate(-2deg);
+  transition: transform 0.3s ease;
+}
+
+.card-polaroid:hover {
+  transform: rotate(0deg) scale(1.02);
+}
+
+/* Badge estilo cinta de papel */
+.badge-tape {
+  @apply inline-block px-4 py-1 font-heading text-xs uppercase tracking-wider;
+  background-color: var(--fiesta-yellow);
+  color: var(--fiesta-ink);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+/* Badge "EN VIVO" pulsante */
+.badge-live {
+  @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase;
+  background-color: var(--mexican-pink);
+  color: white;
+}
+
+.badge-live::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+/* Botón principal — rosa mexicano */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-body font-semibold text-white transition-all;
+  background-color: var(--mexican-pink);
+  box-shadow: var(--shadow-hard-sm);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hard);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+  box-shadow: 2px 2px 0px var(--fiesta-ink);
+}
+
+/* Botón outline oscuro */
+.btn-outline {
+  @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-body font-semibold transition-all;
+  border: 2px solid var(--fiesta-ink);
+  color: var(--fiesta-ink);
+}
+
+.btn-outline:hover {
+  background-color: var(--fiesta-ink);
+  color: var(--paper-white);
+}
+
+/* Contenedor de página con padding para bottom nav */
+.page-container {
+  @apply pb-24 min-h-screen;
+  padding-bottom: calc(var(--bottom-nav-height) + 1.5rem);
+}
+
+/* Texto con sombra estilo sticker */
+.text-sticker {
+  text-shadow: 3px 3px 0px var(--fiesta-ink);
+}
+
+/* Flip card 3D (para la sección Taller) */
+.flip-card {
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  backface-visibility: hidden;
+  position: absolute;
+  inset: 0;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* Texto con contorno (outline) — usado en "CARTÓN" */
+.text-stroke {
+  -webkit-text-stroke: 2px var(--fiesta-ink);
+  -webkit-text-fill-color: transparent;
+}
+
+/* ═══════════════════════════════════════════════════════
+ * 🛠  Utilities — Helpers visuales
+ * ═══════════════════════════════════════════════════════ */
+
+/* Gradiente superpuesto para imágenes hero */
+.gradient-overlay {
+  background: linear-gradient(to top,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(0, 0, 0, 0.4) 40%,
+      transparent 100%);
+}
+
+/* Esconder scrollbar manteniendo scroll funcional */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Línea decorativa estilo tradición */
+.divider-fiesta {
+  height: 4px;
+  background: repeating-linear-gradient(90deg,
+      var(--mexican-pink) 0px,
+      var(--mexican-pink) 12px,
+      var(--fiesta-yellow) 12px,
+      var(--fiesta-yellow) 24px,
+      var(--fiesta-cyan) 24px,
+      var(--fiesta-cyan) 36px,
+      var(--fiesta-purple) 36px,
+      var(--fiesta-purple) 48px);
+}
+
+/* ═══════════════════════════════════════════════════════
+ * 🎬  Keyframes para animaciones CSS puras
+ * ═══════════════════════════════════════════════════════ */
+@keyframes pulse-dot {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(1.4);
   }
 }
