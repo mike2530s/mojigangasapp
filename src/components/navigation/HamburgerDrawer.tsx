@@ -12,7 +12,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    Menu, X, LogIn, LogOut, User, UserPlus,
+    Menu, X, LogIn, LogOut, User, UserPlus, ImagePlus,
     ChevronRight, Home, BookOpen, Map, Layers, Palette
 } from "lucide-react";
 import Link from "next/link";
@@ -103,7 +103,13 @@ function CreateArtesanoForm() {
             setSuccess(true);
             setEmail(""); setPassword(""); setNombre("");
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Error al crear la cuenta");
+            // Supabase errors (PostgrestError / AuthApiError) may not extend native Error
+            const msg =
+                err instanceof Error
+                    ? err.message
+                    : (err as { message?: string })?.message
+                    ?? JSON.stringify(err);
+            setError(msg || "Error al crear la cuenta");
         } finally {
             setLoading(false);
         }
@@ -256,11 +262,18 @@ export default function HamburgerDrawer() {
 
                                         {/* Artesano: go to own profile */}
                                         {isArtesano && (
-                                            <Link href={`/artesanos/${user.id}`} onClick={close}
-                                                className="flex items-center gap-2 w-full bg-fiesta-ink text-white
-                                                           font-heading text-sm py-2.5 px-4 rounded-xl">
-                                                <Palette size={16} /> <T>Mi Perfil de Artesano</T>
-                                            </Link>
+                                            <div className="space-y-2">
+                                                <Link href={`/artesanos/${user.id}`} onClick={close}
+                                                    className="flex items-center gap-2 w-full bg-fiesta-ink text-white
+                                                               font-heading text-sm py-2.5 px-4 rounded-xl">
+                                                    <Palette size={16} /> <T>Mi Perfil de Artesano</T>
+                                                </Link>
+                                                <Link href="/subir-mojiganga" onClick={close}
+                                                    className="flex items-center gap-2 w-full bg-mexican-pink text-white
+                                                               font-heading text-sm py-2.5 px-4 rounded-xl">
+                                                    <ImagePlus size={16} /> <T>Subir Mojiganga</T>
+                                                </Link>
+                                            </div>
                                         )}
 
                                         {/* Admin: create artisan accounts */}

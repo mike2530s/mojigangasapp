@@ -1,15 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 /**
- * Detalle de Mojiganga -- Pagina individual de personaje
+ * Detalle de Mojiganga — Página individual con carrusel de fotos
  *
- * Muestra la informacion completa de una mojiganga:
- * - Imagen hero a pantalla completa con gradiente
- * - Nombre, artesano, anio y categoria
- * - Historia completa
- * - Lista de materiales
- * - Boton para volver al catalogo
- *
- * Conectado a Supabase via getMojigangaById.
- * Si no encuentra el ID, muestra los datos fallback del hook.
+ * - Carrusel touch/swipe con hasta 5 fotos
+ * - Historia, materiales, meta info
+ * - Botón para volver al catálogo
  */
 
 "use client";
@@ -21,6 +16,7 @@ import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
 import { getMojigangaById, type Mojiganga } from "@/lib/supabase/mojigangas";
 import { useMojigangas } from "@/hooks/useMojigangas";
 import T from "@/lib/i18n/T";
+import PhotoCarousel from "@/components/catalogo/PhotoCarousel";
 
 export default function MojigangaDetailPage() {
     const params = useParams();
@@ -37,7 +33,6 @@ export default function MojigangaDetailPage() {
                 const data = await getMojigangaById(id);
                 setMojiganga(data);
             } catch {
-                // Fallback: buscar en datos locales del hook
                 const fallback = mojigangas.find((m) => m.id === id) || null;
                 setMojiganga(fallback);
             } finally {
@@ -69,46 +64,43 @@ export default function MojigangaDetailPage() {
         );
     }
 
+    /* ── Fotos: imagenes_urls[] → fallback a imagen_url ── */
+    const raw = mojiganga as unknown as { imagenes_urls?: string[] };
+    const photos: string[] =
+        raw.imagenes_urls && raw.imagenes_urls.length > 0
+            ? raw.imagenes_urls
+            : mojiganga.imagen_url
+                ? [mojiganga.imagen_url]
+                : [];
+
     return (
         <main className="min-h-screen bg-paper-white">
-            {/* Imagen hero con gradiente */}
-            <div className="relative h-[50vh] overflow-hidden">
-                <img
-                    src={mojiganga.imagen_url}
-                    alt={mojiganga.nombre}
-                    className="w-full h-full object-cover"
-                />
-                <div className="gradient-overlay absolute inset-0" />
 
-                {/* Boton volver */}
+            {/* ── Carrusel premium ── */}
+            <div className="relative">
+                <PhotoCarousel images={photos} alt={mojiganga.nombre} heightClass="h-[58vh]">
+                    <span className="badge-tape mb-2 inline-block">{mojiganga.categoria}</span>
+                    <h1 className="font-heading text-3xl text-white leading-tight drop-shadow-lg">
+                        {mojiganga.nombre}
+                    </h1>
+                </PhotoCarousel>
+
+                {/* Botón volver — flotante sobre el carrusel */}
                 <button
                     onClick={() => router.back()}
-                    className="absolute top-5 left-5 w-10 h-10 rounded-full bg-white/20 
+                    className="absolute top-5 left-5 w-10 h-10 rounded-full bg-white/20
                                backdrop-blur-sm flex items-center justify-center text-white
-                               hover:bg-white/40 transition-colors z-10"
+                               hover:bg-white/40 transition-colors z-30"
                 >
                     <ArrowLeft size={20} />
                 </button>
-
-                {/* Titulo sobre la imagen */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute bottom-0 left-0 right-0 p-5"
-                >
-                    <span className="badge-tape mb-2 inline-block">{mojiganga.categoria}</span>
-                    <h1 className="font-heading text-3xl text-white leading-tight">
-                        {mojiganga.nombre}
-                    </h1>
-                </motion.div>
             </div>
 
-            {/* Contenido */}
+            {/* ── Contenido ── */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
                 className="px-5 py-6 pb-24"
             >
                 {/* Meta info */}
@@ -147,7 +139,7 @@ export default function MojigangaDetailPage() {
                             {mojiganga.materiales.map((mat, i) => (
                                 <span
                                     key={i}
-                                    className="px-3 py-1.5 bg-white rounded-full text-xs font-body 
+                                    className="px-3 py-1.5 bg-white rounded-full text-xs font-body
                                                text-gray-700 shadow-hard-sm border border-gray-100"
                                 >
                                     {mat}
@@ -157,7 +149,7 @@ export default function MojigangaDetailPage() {
                     </>
                 )}
 
-                {/* Boton volver */}
+                {/* Botón volver */}
                 <button onClick={() => router.push("/catalogo")} className="btn-outline w-full justify-center">
                     <T>Ver todo el Catálogo</T>
                 </button>
