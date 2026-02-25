@@ -1,11 +1,7 @@
 /**
- * 🧭 BottomNav — Barra de navegación inferior
+ * BottomNav -- Barra de navegacion inferior
  *
- * Navegación principal de la app con 4 rutas.
- * - Pill shape oscura flotante sobre el contenido
- * - El ícono activo tiene un círculo rosa mexicano con animación
- * - Usa Framer Motion para la transición del indicador activo
- * - Compatible con App Router (usePathname para ruta activa)
+ * Etiquetas de tabs traducidas automaticamente via useText.
  */
 
 "use client";
@@ -14,62 +10,55 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { Home, BookOpen, Map, User } from "lucide-react";
+import { useText } from "@/lib/i18n/useText";
 
-/* ── Definición de rutas de navegación ──────────────── */
-const NAV_ITEMS = [
-    { href: "/home", label: "Inicio", icon: Home },
-    { href: "/historias", label: "Historias", icon: BookOpen },
-    { href: "/mapa", label: "Mapa", icon: Map },
-    { href: "/catalogo", label: "Catálogo", icon: User },
+const NAV_HREFS = [
+    { href: "/home", labelEs: "Inicio", icon: Home },
+    { href: "/historias", labelEs: "Historias", icon: BookOpen },
+    { href: "/mapa", labelEs: "Mapa", icon: Map },
+    { href: "/catalogo", labelEs: "Catálogo", icon: User },
 ] as const;
 
-export default function BottomNav() {
+function NavItem({ href, labelEs, icon: Icon }: { href: string; labelEs: string; icon: typeof Home }) {
     const pathname = usePathname();
+    const label = useText(labelEs);
+    const isActive = pathname === href || pathname?.startsWith(href + "/");
 
+    return (
+        <Link
+            href={href}
+            aria-label={label}
+            aria-current={isActive ? "page" : undefined}
+            className="relative flex items-center justify-center w-12 h-12"
+        >
+            {isActive && (
+                <motion.span
+                    layoutId="nav-indicator"
+                    className="absolute inset-0 rounded-full bg-mexican-pink"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+            )}
+            <Icon
+                size={22}
+                strokeWidth={2.2}
+                className={`relative z-10 transition-colors duration-200 ${isActive ? "text-white" : "text-gray-400"}`}
+            />
+        </Link>
+    );
+}
+
+export default function BottomNav() {
     return (
         <nav
             className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50
                  bg-fiesta-ink rounded-full px-6 py-3
                  flex items-center gap-8
                  shadow-hard-lg"
-            aria-label="Navegación principal"
+            aria-label="Navegacion principal"
         >
-            {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-                /* Detecta si la ruta actual coincide con este item */
-                const isActive =
-                    pathname === href || pathname?.startsWith(href + "/");
-
-                return (
-                    <Link
-                        key={href}
-                        href={href}
-                        aria-label={label}
-                        aria-current={isActive ? "page" : undefined}
-                        className="relative flex items-center justify-center w-12 h-12"
-                    >
-                        {/* Círculo rosa animado detrás del ícono activo */}
-                        {isActive && (
-                            <motion.span
-                                layoutId="nav-indicator"
-                                className="absolute inset-0 rounded-full bg-mexican-pink"
-                                transition={{
-                                    type: "spring",
-                                    stiffness: 380,
-                                    damping: 30,
-                                }}
-                            />
-                        )}
-
-                        {/* Ícono */}
-                        <Icon
-                            size={22}
-                            strokeWidth={2.2}
-                            className={`relative z-10 transition-colors duration-200 ${isActive ? "text-white" : "text-gray-400"
-                                }`}
-                        />
-                    </Link>
-                );
-            })}
+            {NAV_HREFS.map((item) => (
+                <NavItem key={item.href} {...item} />
+            ))}
         </nav>
     );
 }

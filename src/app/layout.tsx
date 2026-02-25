@@ -1,19 +1,18 @@
 /**
- * 🎭 Layout Global — Mojigangas: Tradición Viva
+ * Layout Global — Mojigangas: Tradicion Viva
  *
- * Este layout envuelve todas las páginas de la app.
- * - Carga las 4 fuentes del sistema de diseño vía next/font/google
- *   (optimizadas automáticamente por Next.js, sin CLS).
- * - Define metadata SEO + PWA.
- * - Inyecta globals.css con Tailwind y el sistema visual.
+ * Envuelve todas las paginas. Provee:
+ * - 4 Google Fonts optimizadas
+ * - Metadata SEO + PWA
+ * - LangProvider para soporte ES/EN
  */
 
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Space_Grotesk, Archivo_Black, Permanent_Marker } from "next/font/google";
 import BottomNav from "@/components/navigation/BottomNav";
+import { LangProvider } from "@/lib/i18n/LangContext";
+import { AuthProvider } from "@/lib/auth/AuthContext";
 import "./globals.css";
-
-/* ── Fuentes optimizadas por Next.js ─────────────────── */
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -43,14 +42,12 @@ const permanentMarker = Permanent_Marker({
   weight: "400",
 });
 
-/* ── Metadata SEO y PWA ──────────────────────────────── */
-
 export const metadata: Metadata = {
-  title: "Mojigangas: Tradición Viva",
+  title: "Mojigangas: Tradicion Viva",
   description:
-    "Plataforma cultural para preservar la tradición de las Mojigangas mexicanas. Archivo cultural, historias comunitarias y red de artesanos.",
-  keywords: ["mojigangas", "tradición", "México", "arte popular", "artesanos", "cultura"],
-  authors: [{ name: "Almas de Cartón" }],
+    "Plataforma cultural para preservar la tradicion de las Mojigangas mexicanas. Archivo cultural, historias comunitarias y red de artesanos.",
+  keywords: ["mojigangas", "tradicion", "Mexico", "arte popular", "artesanos", "cultura"],
+  authors: [{ name: "Almas de Carton" }],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -65,8 +62,6 @@ export const viewport: Viewport = {
   maximumScale: 1,
   themeColor: "#FF005C",
 };
-
-/* ── Root Layout ─────────────────────────────────────── */
 
 export default function RootLayout({
   children,
@@ -84,8 +79,12 @@ export default function RootLayout({
       `}
     >
       <body className="font-body antialiased bg-paper-white text-fiesta-ink">
-        {children}
-        <BottomNav />
+        <LangProvider>
+          <AuthProvider>
+            {children}
+            <BottomNav />
+          </AuthProvider>
+        </LangProvider>
       </body>
     </html>
   );

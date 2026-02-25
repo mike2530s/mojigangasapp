@@ -1,12 +1,7 @@
 /**
- * 🏠 Home Page — Pantalla de inicio "Viviendo la Tradición"
+ * Home Page — Pantalla de inicio
  *
- * Pantalla principal conectada a Supabase via useMojigangas:
- * - Header con branding "Viviendo LA TRADICIÓN"
- * - Tarjeta hero "Historia del Día" con imagen y gradiente
- * - Sección "COLECCIÓN VIVA" con scroll horizontal de polaroids
- *
- * Usa useMojigangas hook con fallback offline.
+ * Todo el texto UI se traduce automaticamente via <T> y useText.
  */
 
 "use client";
@@ -16,13 +11,12 @@ import Link from "next/link";
 import Header from "@/components/navigation/Header";
 import HeroStoryCard from "@/components/home/HeroStoryCard";
 import { useMojigangas } from "@/hooks/useMojigangas";
+import T from "@/lib/i18n/T";
 
-/* ── Variantes de animación ────────────────────────────── */
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.12 } },
 };
-
 const cardVariants = {
     hidden: { opacity: 0, scale: 0.9 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } },
@@ -30,8 +24,6 @@ const cardVariants = {
 
 export default function HomePage() {
     const { mojigangas } = useMojigangas();
-
-    /* La primera mojiganga se usa como hero a pantalla completa */
     const hero = mojigangas[0];
     const collection = mojigangas.slice(1);
 
@@ -39,22 +31,22 @@ export default function HomePage() {
         <main className="page-container">
             <Header />
 
-            {/* Hero — Historia del Día */}
+            {/* Hero */}
             <section className="mt-4">
                 <HeroStoryCard
                     imageSrc={hero?.imagen_url || "https://images.unsplash.com/photo-1531746790095-e6b20018a58a?w=800&q=80"}
                     title={hero?.nombre || "Ojos que Cuentan Historias"}
-                    description={hero?.historia || "Descubre el significado detras de la mirada esmeralda de Dona Josefa..."}
+                    description={hero?.historia || "Descubre el significado detrás de la mirada esmeralda de Doña Josefa..."}
                     href={hero ? `/catalogo/${hero.id}` : undefined}
                 />
             </section>
 
-            {/* Sección Colección Viva */}
+            {/* Coleccion Viva */}
             <section className="mt-8 px-5">
                 <div className="flex items-center gap-2 mb-4">
                     <span className="w-3 h-3 rounded-full bg-mexican-pink" />
                     <h3 className="font-heading text-sm uppercase tracking-widest">
-                        Colección Viva
+                        <T>Colección Viva</T>
                     </h3>
                 </div>
 
@@ -65,56 +57,44 @@ export default function HomePage() {
                     className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-1 px-1"
                 >
                     {collection.map((item) => (
-                        <motion.div
-                            key={item.id}
-                            variants={cardVariants}
-                            className="flex-shrink-0 w-48"
-                        >
+                        <motion.div key={item.id} variants={cardVariants} className="flex-shrink-0 w-48">
                             <Link href={`/catalogo/${item.id}`}>
                                 <div className="card-polaroid">
                                     <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-200">
-                                        <img
-                                            src={item.imagen_url}
-                                            alt={item.nombre}
-                                            className="w-full h-full object-cover"
-                                        />
-                                        <span className="absolute bottom-2 right-2 bg-fiesta-ink/80 text-white 
-                                       text-xs px-2 py-0.5 rounded font-body">
+                                        <img src={item.imagen_url} alt={item.nombre} className="w-full h-full object-cover" />
+                                        <span className="absolute bottom-2 right-2 bg-fiesta-ink/80 text-white text-xs px-2 py-0.5 rounded font-body">
                                             {item.año}
                                         </span>
                                     </div>
                                 </div>
-                                <p className="mt-2 text-sm font-body text-gray-700 text-center line-clamp-2">
-                                    {item.nombre}
-                                </p>
+                                <p className="mt-2 text-sm font-body text-gray-700 text-center line-clamp-2">{item.nombre}</p>
                             </Link>
                         </motion.div>
                     ))}
                 </motion.div>
             </section>
 
-            {/* Divider decorativo */}
             <div className="divider-fiesta mx-5 mt-8 mb-6 rounded-full" />
 
-            {/* Secciones de acceso rapido */}
+            {/* Descubre Mas */}
             <section className="px-5 mb-8">
                 <div className="flex items-center gap-2 mb-4">
                     <span className="w-3 h-3 rounded-full bg-fiesta-cyan" />
                     <h3 className="font-heading text-sm uppercase tracking-widest">
-                        Descubre Mas
+                        <T>Descubre Más</T>
                     </h3>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <a href="/taller" className="bg-fiesta-ink rounded-card p-5 shadow-hard-sm group">
-                        <span className="text-fiesta-yellow font-heading text-xs uppercase tracking-widest">Proceso</span>
-                        <h4 className="text-white font-heading text-lg mt-1 group-hover:text-fiesta-yellow transition-colors">El Taller</h4>
-                        <p className="text-gray-400 text-xs font-body mt-1">Como se crea una mojiganga</p>
+                        <span className="text-fiesta-yellow font-heading text-xs uppercase tracking-widest"><T>Proceso</T></span>
+                        <h4 className="text-white font-heading text-lg mt-1 group-hover:text-fiesta-yellow transition-colors"><T>El Taller</T></h4>
+                        <p className="text-gray-400 text-xs font-body mt-1"><T>Cómo se crea una mojiganga</T></p>
                     </a>
                     <a href="/tips" className="bg-white rounded-card p-5 shadow-hard-sm group border-2 border-transparent hover:border-mexican-pink transition-colors">
-                        <span className="text-fiesta-purple font-heading text-xs uppercase tracking-widest">Curiosidades</span>
-                        <h4 className="text-fiesta-ink font-heading text-lg mt-1">Tips &amp; Datos</h4>
-                        <p className="text-gray-500 text-xs font-body mt-1">Sabias que...</p>
+                        <span className="text-fiesta-purple font-heading text-xs uppercase tracking-widest"><T>Curiosidades</T></span>
+                        <h4 className="text-fiesta-ink font-heading text-lg mt-1"><T>Tips & Datos</T></h4>
+                        <p className="text-gray-500 text-xs font-body mt-1"><T>Sabías que...</T></p>
                     </a>
                 </div>
             </section>

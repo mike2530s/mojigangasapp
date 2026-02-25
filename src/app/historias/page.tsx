@@ -1,14 +1,8 @@
 /**
- * 📖 Historias Page — Comunidad de historias
+ * Historias Page — Feed social de historias comunitarias
  *
- * Pantalla estilo feed social conectada a Supabase:
- * - Header con menú hamburguesa, título y campana
- * - Barra "Comparte tu historia..." que lleva a /subir
- * - Sección "DESTACADOS HOY" con círculos de stories
- * - Feed vertical de tarjetas PostCard (datos de Supabase)
- * - Botón flotante "+" para nueva historia
- *
- * Usa useHistorias hook con fallback offline.
+ * Etiquetas y textos UI traducidos via <T> y useText.
+ * El contenido del feed (historias de usuarios) no se traduce -- es contenido generado por usuarios.
  */
 
 "use client";
@@ -20,16 +14,11 @@ import StoriesRow from "@/components/historias/StoriesRow";
 import PostCard from "@/components/historias/PostCard";
 import FloatingButton from "@/components/historias/FloatingButton";
 import { useHistorias } from "@/hooks/useHistorias";
+import { useTranslation } from "@/lib/i18n/LangContext";
+import T from "@/lib/i18n/T";
+import { useText } from "@/lib/i18n/useText";
+import HamburgerDrawer from "@/components/navigation/HamburgerDrawer";
 
-/* ── Stories destacadas (estáticas por ahora) ──────────── */
-const FEATURED_STORIES = [
-    { id: "s1", label: "Taller", imageUrl: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=200&q=80" },
-    { id: "s2", label: "Desfile", imageUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=200&q=80", color: "linear-gradient(135deg, #FFD600, #FF005C)" },
-    { id: "s3", label: "Artesano", imageUrl: "https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=200&q=80", color: "linear-gradient(135deg, #00E5FF, #9C27B0)" },
-    { id: "s4", label: "Museo", imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&q=80" },
-];
-
-/* ── Animaciones ───────────────────────────────────────── */
 const feedVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
@@ -39,50 +28,79 @@ const postVariants = {
     visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
-/** Helper: tiempo relativo desde timestamp */
-function timeAgo(dateStr: string): string {
+/** Tiempo relativo en el idioma activo */
+function useTimeAgo(dateStr: string): string {
+    const { lang } = useTranslation();
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 60) return `hace ${mins}m`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `hace ${hrs}h`;
-    return `hace ${Math.floor(hrs / 24)}d`;
+
+    if (lang === "es") {
+        if (mins < 60) return `hace ${mins}m`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `hace ${hrs}h`;
+        return `hace ${Math.floor(hrs / 24)}d`;
+    } else {
+        if (mins < 60) return `${mins}m ago`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${hrs}h ago`;
+        return `${Math.floor(hrs / 24)}d ago`;
+    }
+}
+
+function PostWrapper({ h }: { h: Parameters<typeof PostCard>[0] & { created_at: string } }) {
+    const timeAgo = useTimeAgo(h.created_at);
+    return (
+        <PostCard
+            userName={h.userName}
+            avatarUrl={h.avatarUrl}
+            location={h.location}
+            timeAgo={timeAgo}
+            imageUrl={h.imageUrl}
+            caption={h.caption}
+        />
+    );
 }
 
 export default function HistoriasPage() {
     const { historias, loading } = useHistorias();
+    const sharePrompt = useText("Comparte tu historia...");
+
+    const FEATURED_STORIES = [
+        { id: "s1", label: "Taller", imageUrl: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=200&q=80" },
+        { id: "s2", label: "Desfile", imageUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=200&q=80", color: "linear-gradient(135deg, #FFD600, #FF005C)" },
+        { id: "s3", label: "Artesano", imageUrl: "https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=200&q=80", color: "linear-gradient(135deg, #00E5FF, #9C27B0)" },
+        { id: "s4", label: "Museo", imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&q=80" },
+    ];
 
     return (
         <main className="page-container bg-paper-white">
             {/* Header */}
             <header className="flex items-center justify-between px-5 pt-5 pb-3">
-                <button className="p-1 text-fiesta-ink hover:text-mexican-pink transition-colors">
-                    <Menu size={24} />
-                </button>
-                <h1 className="font-heading text-lg tracking-wide">Historias</h1>
+                <HamburgerDrawer />
+                <h1 className="font-heading text-lg tracking-wide"><T>Historias</T></h1>
                 <button className="p-1 text-fiesta-ink hover:text-mexican-pink transition-colors relative">
                     <Bell size={22} />
                     <span className="absolute top-0 right-0 w-2 h-2 bg-mexican-pink rounded-full" />
                 </button>
             </header>
 
-            {/* Barra "Comparte tu historia..." */}
+            {/* Barra compartir */}
             <Link href="/subir" className="block mx-5 mb-5">
                 <div className="flex items-center gap-3 bg-white rounded-full px-4 py-3 shadow-hard-sm">
                     <div className="w-9 h-9 rounded-full bg-gray-200 flex-shrink-0" />
-                    <span className="text-sm text-gray-400 font-body">Comparte tu historia...</span>
+                    <span className="text-sm text-gray-400 font-body">{sharePrompt}</span>
                 </div>
             </Link>
 
-            {/* Destacados Hoy */}
+            {/* Destacados */}
             <section className="mb-5">
                 <h2 className="px-5 font-heading text-xs uppercase tracking-widest text-fiesta-yellow mb-3">
-                    Destacados Hoy
+                    <T>Destacados Hoy</T>
                 </h2>
                 <StoriesRow stories={FEATURED_STORIES} />
             </section>
 
-            {/* Feed — ahora desde Supabase */}
+            {/* Feed */}
             {loading ? (
                 <div className="px-5 space-y-5">
                     {[1, 2, 3].map((i) => (
@@ -90,21 +108,19 @@ export default function HistoriasPage() {
                     ))}
                 </div>
             ) : (
-                <motion.section
-                    variants={feedVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="px-5 space-y-5"
-                >
+                <motion.section variants={feedVariants} initial="hidden" animate="visible" className="px-5 space-y-5">
                     {historias.map((h) => (
                         <motion.div key={h.id} variants={postVariants}>
-                            <PostCard
-                                userName={h.usuario_nombre}
-                                avatarUrl={`https://ui-avatars.com/api/?name=${encodeURIComponent(h.usuario_nombre)}&background=FF005C&color=fff&size=100`}
-                                location={h.ubicacion_nombre || "México"}
-                                timeAgo={timeAgo(h.created_at)}
-                                imageUrl={h.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80"}
-                                caption={h.relato}
+                            <PostWrapper
+                                h={{
+                                    created_at: h.created_at,
+                                    userName: h.usuario_nombre,
+                                    avatarUrl: `https://ui-avatars.com/api/?name=${encodeURIComponent(h.usuario_nombre)}&background=FF005C&color=fff&size=100`,
+                                    location: h.ubicacion_nombre || "México",
+                                    timeAgo: "",
+                                    imageUrl: h.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80",
+                                    caption: h.relato,
+                                }}
                             />
                         </motion.div>
                     ))}
