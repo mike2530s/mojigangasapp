@@ -44,15 +44,21 @@ export function useArtesanos() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        let mounted = true;
         getArtesanos()
             .then((data) => {
-                if (data.length > 0) setArtesanos(data);
+                if (mounted && data.length > 0) setArtesanos(data);
             })
             .catch((err) => {
-                console.warn("useArtesanos: usando datos offline", err);
-                setError(err.message);
+                if (mounted) {
+                    console.warn("useArtesanos: usando datos offline", err);
+                    setError(err.message);
+                }
             })
-            .finally(() => setLoading(false));
+            .finally(() => {
+                if (mounted) setLoading(false);
+            });
+        return () => { mounted = false; };
     }, []);
 
     return { artesanos, loading, error };

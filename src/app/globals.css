@@ -152,10 +152,19 @@ video {
   color: var(--paper-white);
 }
 
-/* Contenedor de página con padding para bottom nav */
+/* Contenedor de página con padding para bottom nav (mobile) / sidebar (desktop) */
 .page-container {
-  @apply pb-24 min-h-screen;
+  @apply pb-24 min-h-screen mx-auto;
   padding-bottom: calc(var(--bottom-nav-height) + 1.5rem);
+  max-width: 1200px;
+}
+
+@media (min-width: 1024px) {
+  .page-container {
+    padding-bottom: 2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 /* Texto con sombra estilo sticker */

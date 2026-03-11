@@ -26,7 +26,7 @@ export interface ArtesanoConMojigangas extends Artesano {
 export async function getArtesanos(): Promise<Artesano[]> {
     const { data, error } = await supabase
         .from("artesanos")
-        .select("*")
+        .select("id, nombre, taller, descripcion, foto_url, ciudad, created_at")
         .order("nombre");
     if (error) throw error;
     return data as Artesano[];
@@ -36,7 +36,7 @@ export async function getArtesanos(): Promise<Artesano[]> {
 export async function getArtesanoById(id: string): Promise<ArtesanoConMojigangas> {
     const { data: artesano, error: aErr } = await supabase
         .from("artesanos")
-        .select("*")
+        .select("id, nombre, taller, descripcion, foto_url, ciudad, created_at")
         .eq("id", id)
         .single();
     if (aErr) throw aErr;

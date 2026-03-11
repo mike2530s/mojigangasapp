@@ -101,6 +101,7 @@ export default function SubirMojigangaPage() {
     const [enviado, setEnviado] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [progreso, setProgreso] = useState(0);
+    const [aceptaTerminos, setAceptaTerminos] = useState(false);
     const fileRef = useRef<HTMLInputElement>(null);
 
     const nombrePh = useText("ej. La Catrina Gigante");
@@ -210,9 +211,9 @@ export default function SubirMojigangaPage() {
                 >
                     <CheckCircle size={72} className="text-green-500 mx-auto" />
                 </motion.div>
-                <h1 className="font-heading text-2xl mb-2">¡Mojiganga publicada!</h1>
+                <h1 className="font-heading text-2xl mb-2"><T>¡Mojiganga publicada!</T></h1>
                 <p className="text-gray-500 font-body text-sm mb-8">
-                    Tu obra ya aparece en el catálogo para que todos la puedan ver.
+                    <T>Tu obra ya aparece en el catálogo para que todos la puedan ver.</T>
                 </p>
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                     <button
@@ -288,7 +289,7 @@ export default function SubirMojigangaPage() {
                                            hover:border-mexican-pink hover:bg-pink-50 transition-colors"
                             >
                                 <ImagePlus size={22} className="text-gray-400" />
-                                <span className="text-xs text-gray-400 font-body">Agregar</span>
+                                <span className="text-xs text-gray-400 font-body"><T>Agregar</T></span>
                             </button>
                         )}
                     </div>
@@ -423,10 +424,30 @@ export default function SubirMojigangaPage() {
                     </div>
                 )}
 
+                {/* ── Aceptar términos ── */}
+                <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={aceptaTerminos}
+                        onChange={(e) => setAceptaTerminos(e.target.checked)}
+                        className="mt-0.5 w-4 h-4 accent-mexican-pink flex-shrink-0"
+                    />
+                    <span className="text-xs font-body text-gray-600 leading-relaxed">
+                        <T>Acepto los</T>{" "}
+                        <Link href="/terminos" className="text-mexican-pink underline hover:text-fiesta-purple" target="_blank">
+                            <T>Términos y Condiciones</T>
+                        </Link>{" "}
+                        <T>y el</T>{" "}
+                        <Link href="/privacidad" className="text-mexican-pink underline hover:text-fiesta-purple" target="_blank">
+                            <T>Aviso de Privacidad</T>
+                        </Link>
+                    </span>
+                </label>
+
                 {/* ── Submit ── */}
                 <button
                     type="submit"
-                    disabled={enviando || fotos.length === 0}
+                    disabled={enviando || fotos.length === 0 || !aceptaTerminos}
                     className="w-full bg-mexican-pink text-white font-heading text-base py-4
                                rounded-2xl flex items-center justify-center gap-2
                                disabled:opacity-50 transition-opacity shadow-lg shadow-pink-200"

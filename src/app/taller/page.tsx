@@ -76,7 +76,7 @@ export default function TallerPage() {
 
             {/* Grid de tarjetas flip */}
             <motion.section variants={containerVariants} initial="hidden" animate="visible" className="px-5 mb-8">
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
                     {PROCESS_STEPS.map((s) => (
                         <motion.div key={s.step} variants={itemVariants}>
                             <ProcessCard
@@ -96,7 +96,7 @@ export default function TallerPage() {
                     <span className="w-3 h-3 rounded-full bg-fiesta-cyan" />
                     <T>Materiales Tradicionales</T>
                 </h2>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                     {MATERIALES.map((mat, i) => (
                         <div key={i} className="bg-white rounded-2xl p-4 text-center shadow-hard-sm">
                             <span className="text-2xl block mb-1">{mat.emoji}</span>

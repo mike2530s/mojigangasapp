@@ -54,10 +54,10 @@ export default function HomePage() {
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
-                    className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-1 px-1"
+                    className="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-1 px-1 lg:grid lg:grid-cols-4 lg:overflow-visible"
                 >
                     {collection.map((item) => (
-                        <motion.div key={item.id} variants={cardVariants} className="flex-shrink-0 w-48">
+                        <motion.div key={item.id} variants={cardVariants} className="flex-shrink-0 w-48 lg:w-auto">
                             <Link href={`/catalogo/${item.id}`}>
                                 <div className="card-polaroid">
                                     <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-200">
@@ -86,16 +86,16 @@ export default function HomePage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <a href="/taller" className="bg-fiesta-ink rounded-card p-5 shadow-hard-sm group">
+                    <Link href="/taller" className="bg-fiesta-ink rounded-card p-5 shadow-hard-sm group">
                         <span className="text-fiesta-yellow font-heading text-xs uppercase tracking-widest"><T>Proceso</T></span>
                         <h4 className="text-white font-heading text-lg mt-1 group-hover:text-fiesta-yellow transition-colors"><T>El Taller</T></h4>
                         <p className="text-gray-400 text-xs font-body mt-1"><T>Cómo se crea una mojiganga</T></p>
-                    </a>
-                    <a href="/tips" className="bg-white rounded-card p-5 shadow-hard-sm group border-2 border-transparent hover:border-mexican-pink transition-colors">
+                    </Link>
+                    <Link href="/tips" className="bg-white rounded-card p-5 shadow-hard-sm group border-2 border-transparent hover:border-mexican-pink transition-colors">
                         <span className="text-fiesta-purple font-heading text-xs uppercase tracking-widest"><T>Curiosidades</T></span>
                         <h4 className="text-fiesta-ink font-heading text-lg mt-1"><T>Tips & Datos</T></h4>
                         <p className="text-gray-500 text-xs font-body mt-1"><T>Sabías que...</T></p>
-                    </a>
+                    </Link>
                 </div>
             </section>
         </main>

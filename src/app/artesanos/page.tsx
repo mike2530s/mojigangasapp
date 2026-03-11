@@ -20,7 +20,7 @@ const cardVariants = {
 };
 
 export default function ArtesanosPage() {
-    const { artesanos, loading } = useArtesanos();
+    const { artesanos, loading, error } = useArtesanos();
 
     return (
         <main className="page-container">
@@ -40,9 +40,16 @@ export default function ArtesanosPage() {
                 </motion.div>
             </section>
 
+            {/* Error */}
+            {error && (
+                <div className="mx-5 mb-4 p-3 bg-red-50 border border-red-200 rounded-card text-sm text-red-600 font-body">
+                    <T>No se pudieron cargar los artesanos. Mostrando información guardada.</T>
+                </div>
+            )}
+
             {/* Grid de artesanos */}
             {loading ? (
-                <div className="px-5 grid grid-cols-2 gap-4">
+                <div className="px-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4].map((i) => (
                         <div key={i} className="bg-white rounded-card h-52 animate-pulse shadow-hard-sm" />
                     ))}
@@ -52,7 +59,7 @@ export default function ArtesanosPage() {
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
-                    className="px-5 grid grid-cols-2 gap-4 mb-24"
+                    className="px-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-24"
                 >
                     {artesanos.map((a) => (
                         <motion.div key={a.id} variants={cardVariants}>

@@ -18,7 +18,7 @@ export interface PuntoRuta {
 export async function getPuntosRuta(): Promise<PuntoRuta[]> {
     const { data, error } = await supabase
         .from("puntos_ruta")
-        .select("*")
+        .select("id, nombre, descripcion, latitud, longitud, orden")
         .order("orden");
     if (error) throw error;
     return data as PuntoRuta[];

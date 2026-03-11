@@ -22,18 +22,20 @@ export interface Desfile {
 export async function getDesfiles() {
     const { data, error } = await supabase
         .from("desfiles")
-        .select("*")
+        .select("id, evento_nombre, fecha_hora, latitud, longitud, descripcion, en_vivo")
         .order("fecha_hora", { ascending: true });
 
     if (error) throw error;
     return data as Desfile[];
 }
 
-/** Obtener solo desfiles en vivo */
+/** Obtener solo desfiles en vivo
+ *  @todo evaluar si usar en la pantalla de mapa
+ */
 export async function getDesfilesEnVivo() {
     const { data, error } = await supabase
         .from("desfiles")
-        .select("*")
+        .select("id, evento_nombre, fecha_hora, latitud, longitud, descripcion, en_vivo")
         .eq("en_vivo", true);
 
     if (error) throw error;

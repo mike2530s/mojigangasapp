@@ -16,7 +16,7 @@ import { useDesfiles } from "@/hooks/useDesfiles";
 import { usePuntosRuta } from "@/hooks/usePuntosRuta";
 import { useAuth } from "@/lib/auth/AuthContext";
 import T from "@/lib/i18n/T";
-import { MapPin, Route, Edit3 } from "lucide-react";
+import { Route, Edit3 } from "lucide-react";
 
 /* ── Carga dinámica (Leaflet no soporta SSR) ── */
 const RouteMapView = dynamic(() => import("@/components/mapa/RouteMapView"), {
@@ -29,7 +29,7 @@ const RouteMapView = dynamic(() => import("@/components/mapa/RouteMapView"), {
 });
 
 export default function MapaPage() {
-    const { desfiles } = useDesfiles();
+    const { desfiles, error: desfilesError } = useDesfiles();
     const { puntos, addPunto, removePunto } = usePuntosRuta();
     const { isAdmin } = useAuth();
 
@@ -72,6 +72,12 @@ export default function MapaPage() {
 
     return (
         <main className="fixed inset-0 flex flex-col bg-paper-white">
+            {/* Error */}
+            {desfilesError && (
+                <div className="mx-3 mt-2 p-2 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 font-body z-10">
+                    <T>No se pudieron cargar los eventos. Mostrando datos guardados.</T>
+                </div>
+            )}
             {/* Top info bar */}
             <div className="absolute top-3 left-3 right-3 z-[400] flex items-center justify-between pointer-events-none">
                 {/* Route counter chip */}

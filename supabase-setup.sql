@@ -223,13 +223,101 @@ INSERT INTO desfiles (evento_nombre, fecha_hora, latitud, longitud, descripcion,
 
 
 -- ──────────────────────────────────────────────────────────────
--- 4. STORAGE: Bucket para imágenes de historias
+-- 4. TABLA: artesanos (Perfiles de creadores)
 -- ──────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS artesanos (
+  id          UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  nombre      TEXT NOT NULL,
+  taller      TEXT,
+  descripcion TEXT,
+  foto_url    TEXT,
+  ciudad      TEXT,
+  created_at  TIMESTAMPTZ DEFAULT now()
+);
+
+-- RLS: lectura pública
+ALTER TABLE artesanos ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Artesanos: lectura pública"
+  ON artesanos FOR SELECT
+  USING (true);
+
+-- Datos de ejemplo
+INSERT INTO artesanos (nombre, taller, descripcion, foto_url, ciudad) VALUES
+(
+  'Taller Linares',
+  'Taller Linares',
+  'Maestro artesano con más de 20 años de experiencia en mojigangas literarias e históricas. Sus obras han recorrido toda la República Mexicana.',
+  'https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=400&q=80',
+  'San Miguel de Allende'
+),
+(
+  'Casa de las Mojigangas',
+  'Casa de las Mojigangas',
+  'Familia artesana de cuatro generaciones dedicada a la preservación y evolución de la tradición mojiganguera.',
+  'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&q=80',
+  'Guanajuato'
+),
+(
+  'Arte Vivo Bajío',
+  'Arte Vivo Bajío',
+  'Colectivo de artesanos jóvenes que fusionan técnicas tradicionales con diseños contemporáneos e ilustraciones pop.',
+  'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80',
+  'León, Guanajuato'
+);
+
+
+-- ──────────────────────────────────────────────────────────────
+-- 5. Agregar columnas extra a mojigangas
+--    (artesano_id para relación con artesanos,
+--     imagenes_urls para múltiples fotos por mojiganga)
+-- ──────────────────────────────────────────────────────────────
+ALTER TABLE mojigangas
+  ADD COLUMN IF NOT EXISTS artesano_id UUID REFERENCES artesanos(id),
+  ADD COLUMN IF NOT EXISTS imagenes_urls TEXT[] DEFAULT '{}';
+
+
+-- ──────────────────────────────────────────────────────────────
+-- 6. TABLA: puntos_ruta (Puntos del recorrido en el mapa)
+-- ──────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS puntos_ruta (
+  id          UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  nombre      TEXT NOT NULL,
+  descripcion TEXT,
+  latitud     DOUBLE PRECISION NOT NULL,
+  longitud    DOUBLE PRECISION NOT NULL,
+  orden       INTEGER NOT NULL DEFAULT 0,
+  created_at  TIMESTAMPTZ DEFAULT now()
+);
+
+-- RLS: lectura pública, escritura solo para usuarios autenticados
+ALTER TABLE puntos_ruta ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "PuntosRuta: lectura pública"
+  ON puntos_ruta FOR SELECT
+  USING (true);
+CREATE POLICY "PuntosRuta: escritura autenticada"
+  ON puntos_ruta FOR INSERT
+  WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "PuntosRuta: borrado autenticado"
+  ON puntos_ruta FOR DELETE
+  USING (auth.role() = 'authenticated');
+
+-- Datos de ejemplo (San Miguel de Allende)
+INSERT INTO puntos_ruta (nombre, descripcion, latitud, longitud, orden) VALUES
+('Plaza Principal', 'Punto de partida del desfile', 20.9144, -100.7452, 1),
+('Jardín Allende', 'Parada principal del recorrido', 20.9138, -100.7459, 2),
+('Templo San Francisco', 'Bendición de las mojigangas', 20.9151, -100.7448, 3),
+('Callejón del Chorro', 'Corredor de artesanos', 20.9160, -100.7440, 4);
+
+
+-- ──────────────────────────────────────────────────────────────
+-- 7. STORAGE: Buckets para imágenes
+-- ──────────────────────────────────────────────────────────────
+
+-- Bucket para historias de la comunidad
 INSERT INTO storage.buckets (id, name, public) 
 VALUES ('imagenes-tradicion', 'imagenes-tradicion', true)
 ON CONFLICT (id) DO NOTHING;
 
--- Política: cualquiera puede subir y ver imágenes
 CREATE POLICY "Imágenes: lectura pública"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'imagenes-tradicion');
@@ -238,8 +326,21 @@ CREATE POLICY "Imágenes: upload público"
   ON storage.objects FOR INSERT
   WITH CHECK (bucket_id = 'imagenes-tradicion');
 
+-- Bucket para fotos de mojigangas (artesanos)
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('mojigangas-fotos', 'mojigangas-fotos', true)
+ON CONFLICT (id) DO NOTHING;
+
+CREATE POLICY "MojigangasFotos: lectura pública"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'mojigangas-fotos');
+
+CREATE POLICY "MojigangasFotos: upload autenticado"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'mojigangas-fotos');
+
 
 -- ============================================================
--- ✅ ¡Listo! Las tablas, datos y permisos están configurados.
+-- ✅ ¡Listo! Las 5 tablas, datos y permisos están configurados.
 -- Reinicia tu dev server (npm run dev) para ver los datos reales.
 -- ============================================================

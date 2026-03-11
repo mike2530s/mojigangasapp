@@ -8,8 +8,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Menu, Bell } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import StoriesRow from "@/components/historias/StoriesRow";
 import PostCard from "@/components/historias/PostCard";
 import FloatingButton from "@/components/historias/FloatingButton";
@@ -62,14 +63,15 @@ function PostWrapper({ h }: { h: Parameters<typeof PostCard>[0] & { created_at: 
 }
 
 export default function HistoriasPage() {
-    const { historias, loading } = useHistorias();
+    const { historias, loading, error } = useHistorias();
     const sharePrompt = useText("Comparte tu historia...");
+    const router = useRouter();
 
     const FEATURED_STORIES = [
-        { id: "s1", label: "Taller", imageUrl: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=200&q=80" },
-        { id: "s2", label: "Desfile", imageUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=200&q=80", color: "linear-gradient(135deg, #FFD600, #FF005C)" },
-        { id: "s3", label: "Artesano", imageUrl: "https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=200&q=80", color: "linear-gradient(135deg, #00E5FF, #9C27B0)" },
-        { id: "s4", label: "Museo", imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&q=80" },
+        { id: "s1", label: "Taller", imageUrl: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=200&q=80", href: "/taller" },
+        { id: "s2", label: "Desfile", imageUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=200&q=80", color: "linear-gradient(135deg, #FFD600, #FF005C)", href: "/mapa" },
+        { id: "s3", label: "Artesano", imageUrl: "https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=200&q=80", color: "linear-gradient(135deg, #00E5FF, #9C27B0)", href: "/artesanos" },
+        { id: "s4", label: "Museo", imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&q=80", href: "/catalogo" },
     ];
 
     return (
@@ -78,10 +80,7 @@ export default function HistoriasPage() {
             <header className="flex items-center justify-between px-5 pt-5 pb-3">
                 <HamburgerDrawer />
                 <h1 className="font-heading text-lg tracking-wide"><T>Historias</T></h1>
-                <button className="p-1 text-fiesta-ink hover:text-mexican-pink transition-colors relative">
-                    <Bell size={22} />
-                    <span className="absolute top-0 right-0 w-2 h-2 bg-mexican-pink rounded-full" />
-                </button>
+                <div className="w-6" /> {/* Spacer for centering */}
             </header>
 
             {/* Barra compartir */}
@@ -97,18 +96,31 @@ export default function HistoriasPage() {
                 <h2 className="px-5 font-heading text-xs uppercase tracking-widest text-fiesta-yellow mb-3">
                     <T>Destacados Hoy</T>
                 </h2>
-                <StoriesRow stories={FEATURED_STORIES} />
+                <StoriesRow
+                    stories={FEATURED_STORIES}
+                    onStoryClick={(id) => {
+                        const story = FEATURED_STORIES.find(s => s.id === id);
+                        if (story?.href) router.push(story.href);
+                    }}
+                />
             </section>
+
+            {/* Error */}
+            {error && (
+                <div className="mx-5 mb-4 p-3 bg-red-50 border border-red-200 rounded-card text-sm text-red-600 font-body">
+                    <T>No se pudieron cargar las historias. Mostrando información guardada.</T>
+                </div>
+            )}
 
             {/* Feed */}
             {loading ? (
-                <div className="px-5 space-y-5">
+                <div className="px-5 space-y-5 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="bg-white rounded-card h-64 animate-pulse shadow-hard-sm" />
                     ))}
                 </div>
             ) : (
-                <motion.section variants={feedVariants} initial="hidden" animate="visible" className="px-5 space-y-5">
+                <motion.section variants={feedVariants} initial="hidden" animate="visible" className="px-5 space-y-5 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
                     {historias.map((h) => (
                         <motion.div key={h.id} variants={postVariants}>
                             <PostWrapper

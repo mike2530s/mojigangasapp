@@ -305,7 +305,18 @@ export default function HamburgerDrawer() {
                             </div>
 
                             {/* Footer */}
-                            <div className="px-5 py-4 border-t border-gray-100">
+                            <div className="px-5 py-4 border-t border-gray-100 space-y-2">
+                                <div className="flex justify-center gap-3">
+                                    <Link href="/terminos" onClick={close}
+                                        className="text-xs text-gray-400 font-body hover:text-mexican-pink transition-colors">
+                                        <T>Términos</T>
+                                    </Link>
+                                    <span className="text-xs text-gray-300">·</span>
+                                    <Link href="/privacidad" onClick={close}
+                                        className="text-xs text-gray-400 font-body hover:text-mexican-pink transition-colors">
+                                        <T>Privacidad</T>
+                                    </Link>
+                                </div>
                                 <p className="text-xs text-gray-400 font-body text-center">
                                     Mojigangas App v1.0
                                 </p>

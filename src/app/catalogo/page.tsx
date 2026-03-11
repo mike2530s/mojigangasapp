@@ -17,9 +17,11 @@ import Header from "@/components/navigation/Header";
 import PolaroidCard from "@/components/catalogo/PolaroidCard";
 import DarkDetailCard from "@/components/catalogo/DarkDetailCard";
 import { useMojigangas } from "@/hooks/useMojigangas";
+import T from "@/lib/i18n/T";
+import Link from "next/link";
 
 export default function CatalogoPage() {
-    const { mojigangas, loading } = useMojigangas();
+    const { mojigangas, loading, error } = useMojigangas();
 
     return (
         <main className="page-container">
@@ -33,43 +35,50 @@ export default function CatalogoPage() {
                     transition={{ duration: 0.5 }}
                 >
                     <h1 className="font-heading text-5xl uppercase leading-none tracking-tight text-fiesta-ink">
-                        Almas de
+                        <T>Almas de</T>
                         <br />
-                        <span className="text-stroke">Cartón</span>
+                        <span className="text-stroke"><T>Cartón</T></span>
                     </h1>
                     <div className="mt-3 mb-3">
                         <span className="inline-block px-4 py-1.5 bg-fiesta-purple text-white 
                              font-heading text-xs uppercase tracking-wider shadow-hard-sm">
-                            Enciclopedia de Personajes
+                            <T>Enciclopedia de Personajes</T>
                         </span>
                     </div>
-                    <button className="flex items-center gap-2 font-heading text-xs uppercase tracking-wider
+                    <Link href="/historias" className="flex items-center gap-2 font-heading text-xs uppercase tracking-wider
                              text-fiesta-ink hover:text-mexican-pink transition-colors">
-                        Descubre sus historias <span className="text-lg">→</span>
-                    </button>
+                        <T>Descubre sus historias</T> <span className="text-lg">→</span>
+                    </Link>
                 </motion.div>
             </section>
+
+            {/* ── Error ── */}
+            {error && (
+                <div className="mx-5 mb-4 p-3 bg-red-50 border border-red-200 rounded-card text-sm text-red-600 font-body">
+                    <T>No se pudieron cargar los datos. Mostrando información guardada.</T>
+                </div>
+            )}
 
             {/* ── Grid de Polaroids ── */}
             <section className="px-5 mb-8">
                 {loading ? (
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {[1, 2, 3, 4].map((i) => (
                             <div key={i} className="aspect-[3/4] bg-gray-200 rounded-card animate-pulse" />
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {mojigangas.map((m, index) => (
-                            <PolaroidCard
-                                key={m.id}
-                                id={m.id}
-                                nombre={m.nombre}
-                                imagenUrl={m.imagen_url}
-                                año={m.año}
-                                index={index}
-                                onClick={(id) => console.log("Ver detalle:", id)}
-                            />
+                            <Link href={`/catalogo/${m.id}`} key={m.id}>
+                                <PolaroidCard
+                                    id={m.id}
+                                    nombre={m.nombre}
+                                    imagenUrl={m.imagen_url}
+                                    año={m.año}
+                                    index={index}
+                                />
+                            </Link>
                         ))}
                     </div>
                 )}

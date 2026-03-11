@@ -10,6 +10,7 @@
 import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Space_Grotesk, Archivo_Black, Permanent_Marker } from "next/font/google";
 import BottomNav from "@/components/navigation/BottomNav";
+import ConsentBanner from "@/components/ConsentBanner";
 import { LangProvider } from "@/lib/i18n/LangContext";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import "./globals.css";
@@ -83,6 +84,7 @@ export default function RootLayout({
           <AuthProvider>
             {children}
             <BottomNav />
+            <ConsentBanner />
           </AuthProvider>
         </LangProvider>
       </body>

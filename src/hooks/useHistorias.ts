@@ -13,20 +13,20 @@ const FALLBACK_DATA: HistoriaComunidad[] = [
     {
         id: "p1", created_at: new Date().toISOString(), usuario_nombre: "Maria G.",
         foto_url: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80",
-        relato: "¡Increíble ver cómo cobran vida estas figuras gigantes!",
-        ubicacion_nombre: "San José, CR", likes: 12,
+        fotos_urls: [], relato: "¡Increíble ver cómo cobran vida estas figuras gigantes!",
+        ubicacion_nombre: "San José, CR", likes: 12, destacada: false, evento: null,
     },
     {
         id: "p2", created_at: new Date().toISOString(), usuario_nombre: "Carlos M.",
         foto_url: "https://images.unsplash.com/photo-1604265179512-4c34e3ee5c28?w=600&q=80",
-        relato: "El carnaval de este año fue espectacular. Las mojigangas de Don Pedro son obras de arte.",
-        ubicacion_nombre: "San Miguel de Allende", likes: 24,
+        fotos_urls: [], relato: "El carnaval de este año fue espectacular. Las mojigangas de Don Pedro son obras de arte.",
+        ubicacion_nombre: "San Miguel de Allende", likes: 24, destacada: false, evento: null,
     },
     {
         id: "p3", created_at: new Date().toISOString(), usuario_nombre: "Ana L.",
         foto_url: "https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=600&q=80",
-        relato: "Mi abuela me contaba que las mojigangas eran parte de cada fiesta del pueblo.",
-        ubicacion_nombre: "Celaya, GTO", likes: 8,
+        fotos_urls: [], relato: "Mi abuela me contaba que las mojigangas eran parte de cada fiesta del pueblo.",
+        ubicacion_nombre: "Celaya, GTO", likes: 8, destacada: false, evento: null,
     },
 ];
 

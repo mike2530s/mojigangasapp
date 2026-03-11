@@ -1,7 +1,8 @@
 /**
- * BottomNav -- Barra de navegacion inferior
+ * BottomNav -- Barra de navegacion inferior (mobile) / centrada (desktop)
  *
  * Etiquetas de tabs traducidas automaticamente via useText.
+ * En desktop (lg:) muestra labels junto a los iconos.
  */
 
 "use client";
@@ -29,12 +30,12 @@ function NavItem({ href, labelEs, icon: Icon }: { href: string; labelEs: string;
             href={href}
             aria-label={label}
             aria-current={isActive ? "page" : undefined}
-            className="relative flex items-center justify-center w-12 h-12"
+            className="relative flex items-center justify-center w-12 h-12 lg:w-auto lg:h-auto lg:gap-2 lg:px-4 lg:py-2 lg:rounded-xl"
         >
             {isActive && (
                 <motion.span
                     layoutId="nav-indicator"
-                    className="absolute inset-0 rounded-full bg-mexican-pink"
+                    className="absolute inset-0 rounded-full lg:rounded-xl bg-mexican-pink"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
             )}
@@ -43,6 +44,9 @@ function NavItem({ href, labelEs, icon: Icon }: { href: string; labelEs: string;
                 strokeWidth={2.2}
                 className={`relative z-10 transition-colors duration-200 ${isActive ? "text-white" : "text-gray-400"}`}
             />
+            <span className={`hidden lg:inline relative z-10 text-sm font-heading transition-colors duration-200 ${isActive ? "text-white" : "text-gray-400"}`}>
+                {label}
+            </span>
         </Link>
     );
 }
@@ -52,7 +56,7 @@ export default function BottomNav() {
         <nav
             className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50
                  bg-fiesta-ink rounded-full px-6 py-3
-                 flex items-center gap-8
+                 flex items-center gap-4 lg:gap-2
                  shadow-hard-lg"
             aria-label="Navegacion principal"
         >
