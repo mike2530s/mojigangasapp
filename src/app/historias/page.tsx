@@ -67,7 +67,21 @@ export default function HistoriasPage() {
     const sharePrompt = useText("Comparte tu historia...");
     const router = useRouter();
 
-    const FEATURED_STORIES = [
+    // Filtrar las historias que tienen 'destacada' activado
+    const highlightedStories = historias
+        .filter(h => h.destacada)
+        .slice(0, 10) // Mostrar máximo 10
+        .map((h, i) => ({
+            id: h.id,
+            label: h.evento || h.usuario_nombre || "Historia",
+            imageUrl: h.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80",
+            // Alternar colores de borde para que se vea dinámico
+            color: i % 2 === 0 ? "linear-gradient(135deg, #FFD600, #FF005C)" : "linear-gradient(135deg, #00E5FF, #9C27B0)",
+            href: `/historias/${h.id}`
+        }));
+
+    // Si no hay historias destacadas en la base de datos, mostramos algunas por defecto para el diseño
+    const FEATURED_STORIES = highlightedStories.length > 0 ? highlightedStories : [
         { id: "s1", label: "Taller", imageUrl: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=200&q=80", href: "/taller" },
         { id: "s2", label: "Desfile", imageUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=200&q=80", color: "linear-gradient(135deg, #FFD600, #FF005C)", href: "/mapa" },
         { id: "s3", label: "Artesano", imageUrl: "https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=200&q=80", color: "linear-gradient(135deg, #00E5FF, #9C27B0)", href: "/artesanos" },
@@ -94,7 +108,7 @@ export default function HistoriasPage() {
             {/* Destacados */}
             <section className="mb-5">
                 <h2 className="px-5 font-heading text-xs uppercase tracking-widest text-fiesta-yellow mb-3">
-                    <T>Destacados Hoy</T>
+                    <T>Destacadas</T>
                 </h2>
                 <StoriesRow
                     stories={FEATURED_STORIES}

@@ -16,11 +16,13 @@ ALTER TABLE historias_comunidad
 ADD COLUMN IF NOT EXISTS evento TEXT;
 
 -- Política RLS: lectura pública
-CREATE POLICY IF NOT EXISTS "Lectura publica historias"
+DROP POLICY IF EXISTS "Lectura publica historias" ON historias_comunidad;
+CREATE POLICY "Lectura publica historias"
   ON historias_comunidad FOR SELECT
   USING (true);
 
 -- Política RLS: inserción pública (cualquiera puede compartir)
-CREATE POLICY IF NOT EXISTS "Insercion publica historias"
+DROP POLICY IF EXISTS "Insercion publica historias" ON historias_comunidad;
+CREATE POLICY "Insercion publica historias"
   ON historias_comunidad FOR INSERT
   WITH CHECK (true);

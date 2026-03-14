@@ -291,7 +291,7 @@ export default function SubirHistoriaPage() {
                             <Star size={14} /> <T>Destacar Historia</T>
                         </div>
                         <p className="text-xs text-gray-400 font-body leading-relaxed">
-                            <T>Tu historia aparecerá en los círculos de "Destacados Hoy" para que más gente la vea.</T>
+                            <T>Tu historia aparecerá en los círculos de "Destacadas" para que más gente la vea.</T>
                         </p>
                     </div>
                     <div className="relative flex-shrink-0">
