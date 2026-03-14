@@ -58,7 +58,7 @@ function TagInput({
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
                     placeholder={placeholder}
-                    className="flex-1 text-sm font-body bg-white border border-gray-200 rounded-xl
+                    className="flex-1 min-w-0 text-sm font-body bg-white border border-gray-200 rounded-xl
                                px-3 py-2.5 outline-none focus:border-mexican-pink transition-colors"
                 />
                 <button type="button" onClick={add}
@@ -71,7 +71,7 @@ function TagInput({
                     {tags.map((t) => (
                         <span key={t}
                             className="flex items-center gap-1 bg-fiesta-ink/10 text-fiesta-ink
-                                       text-xs font-body rounded-full px-2.5 py-1">
+                                       text-xs font-body rounded-full px-2.5 py-1 break-all">
                             {t}
                             <button type="button" onClick={() => onChange(tags.filter((x) => x !== t))}>
                                 <X size={10} />
@@ -341,7 +341,7 @@ export default function SubirMojigangaPage() {
                         rows={4}
                         maxLength={600}
                         className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
-                                   px-3 py-3 outline-none focus:border-mexican-pink transition-colors resize-none"
+                                   px-3 py-3 outline-none focus:border-mexican-pink transition-colors resize-none break-words"
                     />
                     <p className="text-xs text-gray-400 font-body text-right mt-0.5">{historia.length}/600</p>
                 </section>
@@ -359,7 +359,7 @@ export default function SubirMojigangaPage() {
                         rows={6}
                         maxLength={1200}
                         className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
-                                   px-3 py-3 outline-none focus:border-mexican-pink transition-colors resize-none"
+                                   px-3 py-3 outline-none focus:border-mexican-pink transition-colors resize-none break-words"
                     />
                     <p className="text-xs text-gray-400 font-body text-right mt-0.5">{proceso.length}/1200</p>
                 </section>

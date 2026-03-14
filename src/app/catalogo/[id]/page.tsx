@@ -124,7 +124,7 @@ export default function MojigangaDetailPage() {
                     <span className="w-3 h-3 rounded-full bg-mexican-pink" />
                     <T>Historia</T>
                 </h2>
-                <p className="text-gray-700 font-body text-sm leading-relaxed mb-8">
+                <p className="text-gray-700 font-body text-sm leading-relaxed mb-8 break-words">
                     {mojiganga.historia}
                 </p>
 
@@ -135,7 +135,7 @@ export default function MojigangaDetailPage() {
                             <span className="w-3 h-3 rounded-full bg-fiesta-yellow" />
                             <T>Proceso de creación</T>
                         </h2>
-                        <p className="text-gray-700 font-body text-sm leading-relaxed mb-8 whitespace-pre-wrap">
+                        <p className="text-gray-700 font-body text-sm leading-relaxed mb-8 whitespace-pre-wrap break-words">
                             {mojiganga.proceso}
                         </p>
                     </>
@@ -152,8 +152,8 @@ export default function MojigangaDetailPage() {
                             {mojiganga.materiales.map((mat, i) => (
                                 <span
                                     key={i}
-                                    className="px-3 py-1.5 bg-white rounded-full text-xs font-body
-                                               text-gray-700 shadow-hard-sm border border-gray-100"
+                                    className="px-4 py-2 bg-white rounded-[20px] text-sm font-body leading-relaxed
+                                               text-gray-700 shadow-hard-sm border border-gray-100 break-all"
                                 >
                                     {mat}
                                 </span>
