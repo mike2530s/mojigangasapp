@@ -10,6 +10,8 @@
 import { motion } from "framer-motion";
 import { Menu } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import StoriesRow from "@/components/historias/StoriesRow";
 import PostCard from "@/components/historias/PostCard";
@@ -48,7 +50,7 @@ function useTimeAgo(dateStr: string): string {
     }
 }
 
-function PostWrapper({ h }: { h: Parameters<typeof PostCard>[0] & { created_at: string } }) {
+function PostWrapper({ h, onClick }: { h: Parameters<typeof PostCard>[0] & { created_at: string }, onClick: () => void }) {
     const timeAgo = useTimeAgo(h.created_at);
     return (
         <PostCard
@@ -58,6 +60,7 @@ function PostWrapper({ h }: { h: Parameters<typeof PostCard>[0] & { created_at: 
             timeAgo={timeAgo}
             imageUrl={h.imageUrl}
             caption={h.caption}
+            onClick={onClick}
         />
     );
 }
@@ -66,6 +69,9 @@ export default function HistoriasPage() {
     const { historias, loading, error } = useHistorias();
     const sharePrompt = useText("Comparte tu historia...");
     const router = useRouter();
+
+    // Estado para la historia destacada seleccionada (modal)
+    const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
 
     // Filtrar las historias que tienen 'destacada' activado
     const highlightedStories = historias
@@ -77,7 +83,9 @@ export default function HistoriasPage() {
             imageUrl: h.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80",
             // Alternar colores de borde para que se vea dinámico
             color: i % 2 === 0 ? "linear-gradient(135deg, #FFD600, #FF005C)" : "linear-gradient(135deg, #00E5FF, #9C27B0)",
-            href: `/historias/${h.id}`
+            // Si tiene id, no usamos href para que abra el modal
+            href: undefined,
+            originalStoryInfo: h
         }));
 
     // Si no hay historias destacadas en la base de datos, mostramos algunas por defecto para el diseño
@@ -114,7 +122,12 @@ export default function HistoriasPage() {
                     stories={FEATURED_STORIES}
                     onStoryClick={(id) => {
                         const story = FEATURED_STORIES.find(s => s.id === id);
-                        if (story?.href) router.push(story.href);
+                        if (story?.href) {
+                            router.push(story.href);
+                        } else {
+                            // Abrir modal de historia destacada
+                            setSelectedStoryId(id);
+                        }
                     }}
                 />
             </section>
@@ -147,6 +160,7 @@ export default function HistoriasPage() {
                                     imageUrl: h.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80",
                                     caption: h.relato,
                                 }}
+                                onClick={() => setSelectedStoryId(h.id)}
                             />
                         </motion.div>
                     ))}
@@ -154,6 +168,62 @@ export default function HistoriasPage() {
             )}
 
             <FloatingButton href="/subir" />
+
+            {/* Modal de Historia Destacada */}
+            {selectedStoryId && (
+                <div className="fixed inset-0 z-[500] bg-black/90 flex items-center justify-center p-4">
+                    {(() => {
+                        const story = historias.find(h => h.id === selectedStoryId);
+                        if (!story) {
+                            setSelectedStoryId(null);
+                            return null;
+                        }
+                        return (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="bg-paper-white w-full max-w-sm rounded-3xl overflow-hidden relative shadow-2xl"
+                            >
+                                <button
+                                    onClick={() => setSelectedStoryId(null)}
+                                    className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center"
+                                >
+                                    <X size={18} />
+                                </button>
+
+                                {/* Foto principal o carrusel si hay varias */}
+                                <div className="h-96 w-full bg-gray-100 relative">
+                                    <img
+                                        src={story.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80"}
+                                        alt="Historia destacada"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+
+                                {/* Info */}
+                                <div className="p-5">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <img
+                                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(story.usuario_nombre)}&background=FF005C&color=fff&size=100`}
+                                            alt={story.usuario_nombre}
+                                            className="w-10 h-10 rounded-full"
+                                        />
+                                        <div>
+                                            <p className="font-heading text-sm text-fiesta-ink">{story.usuario_nombre}</p>
+                                            <p className="text-xs text-gray-500 font-body">
+                                                {story.evento || story.ubicacion_nombre || "México"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <p className="text-sm text-gray-700 font-body leading-relaxed whitespace-pre-wrap">
+                                        {story.relato}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        );
+                    })()}
+                </div>
+            )}
         </main>
     );
 }

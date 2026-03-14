@@ -12,8 +12,10 @@ export interface Mojiganga {
     id: string;
     nombre: string;
     historia: string;
+    proceso?: string;
     artesano: string;
     imagen_url: string;
+    imagenes_urls?: string[];
     materiales: string[];
     año: number;
     categoria: string;

@@ -128,6 +128,19 @@ export default function MojigangaDetailPage() {
                     {mojiganga.historia}
                 </p>
 
+                {/* Proceso de Creación */}
+                {mojiganga.proceso && (
+                    <>
+                        <h2 className="font-heading text-sm uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <span className="w-3 h-3 rounded-full bg-fiesta-yellow" />
+                            <T>Proceso de creación</T>
+                        </h2>
+                        <p className="text-gray-700 font-body text-sm leading-relaxed mb-8 whitespace-pre-wrap">
+                            {mojiganga.proceso}
+                        </p>
+                    </>
+                )}
+
                 {/* Materiales */}
                 {mojiganga.materiales && mojiganga.materiales.length > 0 && (
                     <>

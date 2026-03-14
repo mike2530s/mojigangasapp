@@ -20,6 +20,7 @@ interface PostCardProps {
     timeAgo: string;
     imageUrl: string;
     caption?: string;
+    onClick?: () => void;
 }
 
 export default function PostCard({
@@ -29,13 +30,15 @@ export default function PostCard({
     timeAgo,
     imageUrl,
     caption,
+    onClick,
 }: PostCardProps) {
     return (
         <motion.article
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
-            className="card-base"
+            className="card-base cursor-pointer"
+            onClick={onClick}
         >
             {/* Cabecera — Avatar, nombre, ubicación, menú */}
             <div className="flex items-center justify-between p-4">

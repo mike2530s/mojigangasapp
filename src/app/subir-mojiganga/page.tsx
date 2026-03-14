@@ -32,7 +32,7 @@ const CATEGORIAS = [
     "Regional", "Político", "Animal", "Otro",
 ];
 
-const MAX_FOTOS = 5;
+const MAX_FOTOS = 8;
 
 /* ── Foto preview item ──────────────────────────────────── */
 interface FotoItem { file: File; preview: string }
@@ -93,6 +93,7 @@ export default function SubirMojigangaPage() {
     /* ── Form state ── */
     const [nombre, setNombre] = useState("");
     const [historia, setHistoria] = useState("");
+    const [proceso, setProceso] = useState("");
     const [año, setAño] = useState(new Date().getFullYear().toString());
     const [categoria, setCategoria] = useState(CATEGORIAS[0]);
     const [materiales, setMateriales] = useState<string[]>([]);
@@ -106,6 +107,7 @@ export default function SubirMojigangaPage() {
 
     const nombrePh = useText("ej. La Catrina Gigante");
     const historiaPh = useText("Cuéntanos la historia e inspiración de esta mojiganga...");
+    const procesoPh = useText("Comparte paso a paso cómo fue el proceso de creación...");
 
     /* ── Auth guard ── */
     if (!authLoading && !canUpload) {
@@ -181,6 +183,7 @@ export default function SubirMojigangaPage() {
             const { error: dbErr } = await supabase.from("mojigangas").insert({
                 nombre: nombre.trim(),
                 historia: historia.trim() || null,
+                proceso: proceso.trim() || null,
                 artesano_id: artesanoId,
                 año: parseInt(año) || new Date().getFullYear(),
                 categoria,
@@ -217,7 +220,7 @@ export default function SubirMojigangaPage() {
                 </p>
                 <div className="flex flex-col gap-3 w-full max-w-xs">
                     <button
-                        onClick={() => { setEnviado(false); setNombre(""); setHistoria(""); setFotos([]); setMateriales([]); }}
+                        onClick={() => { setEnviado(false); setNombre(""); setHistoria(""); setProceso(""); setFotos([]); setMateriales([]); }}
                         className="w-full bg-fiesta-ink text-white font-heading py-3 rounded-2xl"
                     >
                         <T>Subir otra mojiganga</T>
@@ -341,6 +344,24 @@ export default function SubirMojigangaPage() {
                                    px-3 py-3 outline-none focus:border-mexican-pink transition-colors resize-none"
                     />
                     <p className="text-xs text-gray-400 font-body text-right mt-0.5">{historia.length}/600</p>
+                </section>
+
+                {/* ── Proceso de creación ── */}
+                <section>
+                    <label className="flex items-center gap-2 font-heading text-xs uppercase tracking-wider mb-2">
+                        <Palette size={13} className="text-mexican-pink" />
+                        <T>Proceso de creación</T>
+                    </label>
+                    <textarea
+                        value={proceso}
+                        onChange={(e) => setProceso(e.target.value)}
+                        placeholder={procesoPh}
+                        rows={6}
+                        maxLength={1200}
+                        className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
+                                   px-3 py-3 outline-none focus:border-mexican-pink transition-colors resize-none"
+                    />
+                    <p className="text-xs text-gray-400 font-body text-right mt-0.5">{proceso.length}/1200</p>
                 </section>
 
                 {/* ── Año + Categoría (grid) ── */}
