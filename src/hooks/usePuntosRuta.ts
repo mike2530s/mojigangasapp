@@ -23,7 +23,7 @@ export function usePuntosRuta() {
     const reload = useCallback(async () => {
         try {
             const data = await getPuntosRuta();
-            if (data.length > 0) setPuntos(data);
+            setPuntos(data.length > 0 ? data : FALLBACK);
         } catch {
             /* usa fallback */
         } finally {

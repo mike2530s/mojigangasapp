@@ -12,13 +12,14 @@ export interface PuntoRuta {
     latitud: number;
     longitud: number;
     orden: number;
+    recorrido_id?: string | null;
 }
 
 /** Obtener todos los puntos ordenados */
 export async function getPuntosRuta(): Promise<PuntoRuta[]> {
     const { data, error } = await supabase
         .from("puntos_ruta")
-        .select("id, nombre, descripcion, latitud, longitud, orden")
+        .select("id, nombre, descripcion, latitud, longitud, orden, recorrido_id")
         .order("orden");
     if (error) throw error;
     return data as PuntoRuta[];

@@ -97,6 +97,8 @@ export default function PhotoCarousel({
                         src={images[current]}
                         alt={`${alt} — foto ${current + 1}`}
                         className="w-full h-full object-cover select-none pointer-events-none"
+                        loading="lazy"
+                        decoding="async"
                         draggable={false}
                     />
                 </motion.div>
@@ -169,7 +171,7 @@ export default function PhotoCarousel({
                                     : "w-10 h-10 opacity-60 hover:opacity-90"
                                 }`}
                         >
-                            <img src={src} alt="" className="w-full h-full object-cover" />
+                            <img src={src} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                         </button>
                     ))}
                 </div>

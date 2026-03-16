@@ -11,7 +11,7 @@
   "dependencies": {
     "@react-leaflet/core": "^2.1.0",
     "@supabase/supabase-js": "^2.97.0",
-    "@types/leaflet": "^1.9.21",
+    "date-fns": "^4.1.0",
     "framer-motion": "^11.18.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.575.0",
@@ -22,6 +22,7 @@
     "sonner": "^2.0.7"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.21",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

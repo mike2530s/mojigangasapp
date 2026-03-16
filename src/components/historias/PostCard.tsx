@@ -76,6 +76,8 @@ export default function PostCard({
                     <img
                         src={images[0]}
                         alt={`Historia de ${userName}`}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full aspect-[4/3] object-cover"
                     />
                 ) : null}

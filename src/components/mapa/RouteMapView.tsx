@@ -52,6 +52,7 @@ export interface RouteMapViewProps {
     isAdmin: boolean;
     onAddPunto: (lat: number, lng: number, nombre: string) => Promise<void>;
     onDeletePunto: (id: string) => Promise<void>;
+    onBackgroundClick?: () => void;
     center?: [number, number];
     zoom?: number;
 }
@@ -62,6 +63,7 @@ export default function RouteMapView({
     isAdmin,
     onAddPunto,
     onDeletePunto,
+    onBackgroundClick,
     center = [20.9144, -100.7452],
     zoom = 15,
 }: RouteMapViewProps) {
@@ -75,11 +77,14 @@ export default function RouteMapView({
 
     const handleMapClick = useCallback(
         (lat: number, lng: number) => {
-            if (!isAdmin) return;
-            setPendingLatLng([lat, lng]);
-            setPendingName("");
+            if (isAdmin) {
+                setPendingLatLng([lat, lng]);
+                setPendingName("");
+            } else {
+                onBackgroundClick?.();
+            }
         },
-        [isAdmin]
+        [isAdmin, onBackgroundClick]
     );
 
     const handleSave = async () => {
@@ -108,8 +113,8 @@ export default function RouteMapView({
         <div className="relative w-full h-full">
             {/* ── Admin banner ──────────────────── */}
             {isAdmin && (
-                <div className="absolute top-12 left-1/2 -translate-x-1/2 z-[500]
-                                bg-fiesta-ink text-white font-heading text-xs px-4 py-2
+                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-[400]
+                                bg-fiesta-ink text-white font-heading text-[11px] sm:text-xs px-4 py-2
                                 rounded-full shadow-lg pointer-events-none whitespace-nowrap">
                     ✏️ Modo Admin — toca el mapa para agregar un punto
                 </div>
@@ -127,8 +132,8 @@ export default function RouteMapView({
                     attribution='&copy; <a href="https://www.openstreetmap.org">OSM</a>'
                 />
 
-                {/* Click handler for admin */}
-                {isAdmin && <ClickHandler onMapClick={handleMapClick} />}
+                {/* Click handler for adding points or dismissing cards */}
+                <ClickHandler onMapClick={handleMapClick} />
 
                 {/* Route polyline */}
                 {routeCoords.length > 1 && (
@@ -178,7 +183,7 @@ export default function RouteMapView({
             {/* ── Admin form overlay ── */}
             {isAdmin && pendingLatLng && (
                 <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-[600]
-                                w-72 bg-white rounded-2xl shadow-2xl p-4 border border-gray-100">
+                                w-11/12 max-w-sm bg-white rounded-2xl shadow-2xl p-4 border border-gray-100 flex flex-col box-border">
                     <p className="font-heading text-xs uppercase tracking-wider text-gray-500 mb-2">
                         Nombre del punto
                     </p>
@@ -189,22 +194,22 @@ export default function RouteMapView({
                         placeholder="ej. Plaza Principal"
                         autoFocus
                         onKeyDown={(e) => e.key === "Enter" && handleSave()}
-                        className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2
+                        className="w-full min-w-0 text-sm border border-gray-200 rounded-xl px-3 py-2
                                    outline-none focus:border-mexican-pink mb-3"
                     />
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 w-full shrink-0">
                         <button
                             onClick={() => setPendingLatLng(null)}
-                            className="flex-1 text-sm font-body text-gray-500 bg-gray-100
-                                       rounded-xl py-2 hover:bg-gray-200 transition-colors"
+                            className="flex-1 min-w-0 text-sm font-body text-gray-500 bg-gray-100
+                                       rounded-xl px-2 py-2 hover:bg-gray-200 transition-colors shrink-0"
                         >
                             Cancelar
                         </button>
                         <button
                             onClick={handleSave}
                             disabled={!pendingName.trim() || saving}
-                            className="flex-1 text-sm font-heading text-white bg-mexican-pink
-                                       rounded-xl py-2 disabled:opacity-50 transition-opacity"
+                            className="flex-1 min-w-0 text-sm font-heading text-white bg-mexican-pink
+                                       rounded-xl px-2 py-2 disabled:opacity-50 transition-opacity shrink-0"
                         >
                             {saving ? "Guardando..." : "Guardar"}
                         </button>
