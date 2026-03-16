@@ -14,6 +14,7 @@ export interface Mojiganga {
     historia: string;
     proceso?: string;
     artesano: string;
+    artesano_id: string;
     imagen_url: string;
     imagenes_urls?: string[];
     materiales: string[];
@@ -42,4 +43,33 @@ export async function getMojigangaById(id: string) {
 
     if (error) throw error;
     return data as Mojiganga;
+}
+
+/** 
+ * Actualizar una mojiganga existente 
+ * Nota: El RLS de Supabase impedirá esto si el usuario no es dueño 
+ */
+export async function updateMojiganga(id: string, updates: Partial<Mojiganga>) {
+    const { data, error } = await supabase
+        .from("mojigangas")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+
+    if (error) throw error;
+    return data as Mojiganga;
+}
+
+/** 
+ * Eliminar una mojiganga por ID 
+ * Nota: El RLS de Supabase impedirá esto si el usuario no es dueño 
+ */
+export async function deleteMojiganga(id: string) {
+    const { error } = await supabase
+        .from("mojigangas")
+        .delete()
+        .eq("id", id);
+
+    if (error) throw error;
 }

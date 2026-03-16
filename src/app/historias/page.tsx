@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import StoriesRow from "@/components/historias/StoriesRow";
 import PostCard from "@/components/historias/PostCard";
 import FloatingButton from "@/components/historias/FloatingButton";
+import PhotoCarousel from "@/components/catalogo/PhotoCarousel";
 import { useHistorias } from "@/hooks/useHistorias";
 import { useTranslation } from "@/lib/i18n/LangContext";
 import T from "@/lib/i18n/T";
@@ -50,7 +51,7 @@ function useTimeAgo(dateStr: string): string {
     }
 }
 
-function PostWrapper({ h, onClick }: { h: Parameters<typeof PostCard>[0] & { created_at: string }, onClick: () => void }) {
+function PostWrapper({ h, onClick }: { h: Parameters<typeof PostCard>[0] & { created_at: string, imageUrls?: string[] }, onClick: () => void }) {
     const timeAgo = useTimeAgo(h.created_at);
     return (
         <PostCard
@@ -59,6 +60,7 @@ function PostWrapper({ h, onClick }: { h: Parameters<typeof PostCard>[0] & { cre
             location={h.location}
             timeAgo={timeAgo}
             imageUrl={h.imageUrl}
+            imageUrls={h.imageUrls}
             caption={h.caption}
             onClick={onClick}
         />
@@ -158,6 +160,7 @@ export default function HistoriasPage() {
                                     location: h.ubicacion_nombre || "México",
                                     timeAgo: "",
                                     imageUrl: h.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80",
+                                    imageUrls: h.fotos_urls && h.fotos_urls.length > 0 ? h.fotos_urls : (h.foto_url ? [h.foto_url] : []),
                                     caption: h.relato,
                                 }}
                                 onClick={() => setSelectedStoryId(h.id)}
@@ -193,11 +196,19 @@ export default function HistoriasPage() {
 
                                 {/* Foto principal o carrusel si hay varias */}
                                 <div className="h-96 w-full bg-gray-100 relative">
-                                    <img
-                                        src={story.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80"}
-                                        alt="Historia destacada"
-                                        className="w-full h-full object-cover"
-                                    />
+                                    {story.fotos_urls && story.fotos_urls.length > 1 ? (
+                                        <PhotoCarousel 
+                                            images={story.fotos_urls} 
+                                            alt={story.usuario_nombre} 
+                                            heightClass="h-96" variant="minimal" 
+                                        />
+                                    ) : (
+                                        <img
+                                            src={story.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80"}
+                                            alt="Historia destacada"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    )}
                                 </div>
 
                                 {/* Info */}

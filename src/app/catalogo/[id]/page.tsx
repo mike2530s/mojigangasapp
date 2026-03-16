@@ -12,11 +12,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
-import { getMojigangaById, type Mojiganga } from "@/lib/supabase/mojigangas";
+import { ArrowLeft, Calendar, User, Tag, Edit2, Trash2, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { getMojigangaById, deleteMojiganga, type Mojiganga } from "@/lib/supabase/mojigangas";
+import { deleteMojigangaPhotos } from "@/lib/supabase/storage";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { useMojigangas } from "@/hooks/useMojigangas";
 import T from "@/lib/i18n/T";
 import PhotoCarousel from "@/components/catalogo/PhotoCarousel";
+import { toast } from "sonner";
 
 export default function MojigangaDetailPage() {
     const params = useParams();
@@ -26,6 +30,8 @@ export default function MojigangaDetailPage() {
     const { mojigangas } = useMojigangas();
     const [mojiganga, setMojiganga] = useState<Mojiganga | null>(null);
     const [loading, setLoading] = useState(true);
+    const [deleting, setDeleting] = useState(false);
+    const { user, isAdmin } = useAuth();
 
     useEffect(() => {
         async function fetchData() {
@@ -72,6 +78,26 @@ export default function MojigangaDetailPage() {
             : mojiganga.imagen_url
                 ? [mojiganga.imagen_url]
                 : [];
+
+    const isOwnerOrAdmin = mojiganga && ((user?.id === (mojiganga as any).artesano_id) || isAdmin);
+
+    const handleDelete = async () => {
+        if (!confirm("¿Seguro que quieres eliminar esta mojiganga del catálogo?")) return;
+        setDeleting(true);
+        try {
+            if (photos.length > 0) {
+                await deleteMojigangaPhotos(photos);
+            }
+            await deleteMojiganga(id);
+            toast.success("Mojiganga eliminada correctamente.");
+            router.push("/catalogo");
+        } catch (error) {
+            console.error(error);
+            toast.error("Error al eliminar. Intenta de nuevo.");
+        } finally {
+            setDeleting(false);
+        }
+    };
 
     return (
         <main className="min-h-screen bg-paper-white">
@@ -160,6 +186,26 @@ export default function MojigangaDetailPage() {
                             ))}
                         </div>
                     </>
+                )}
+
+                {/* Controles de Artesano / Admin */}
+                {isOwnerOrAdmin && (
+                    <div className="flex items-center gap-3 mb-8">
+                        <Link
+                            href={`/editar-mojiganga/${id}`}
+                            className="flex-1 btn-outline flex items-center justify-center gap-2 border-fiesta-cyan text-fiesta-cyan hover:bg-fiesta-cyan"
+                        >
+                            <Edit2 size={16} /> <T>Editar</T>
+                        </Link>
+                        <button
+                            onClick={handleDelete}
+                            disabled={deleting}
+                            className="flex-1 btn-outline flex items-center justify-center gap-2 border-red-500 text-red-500 hover:bg-red-500 disabled:opacity-50"
+                        >
+                            {deleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                            <T>{deleting ? "Borrando..." : "Eliminar"}</T>
+                        </button>
+                    </div>
                 )}
 
                 {/* Botón volver */}

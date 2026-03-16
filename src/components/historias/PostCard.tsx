@@ -12,13 +12,15 @@
 
 import { motion } from "framer-motion";
 import { MapPin, MoreHorizontal } from "lucide-react";
+import PhotoCarousel from "@/components/catalogo/PhotoCarousel";
 
 interface PostCardProps {
     userName: string;
     avatarUrl: string;
     location: string;
     timeAgo: string;
-    imageUrl: string;
+    imageUrl?: string;
+    imageUrls?: string[];
     caption?: string;
     onClick?: () => void;
 }
@@ -29,9 +31,12 @@ export default function PostCard({
     location,
     timeAgo,
     imageUrl,
+    imageUrls,
     caption,
     onClick,
 }: PostCardProps) {
+    const images = imageUrls?.length ? imageUrls : imageUrl ? [imageUrl] : [];
+    
     return (
         <motion.article
             initial={{ opacity: 0, scale: 0.95 }}
@@ -60,15 +65,23 @@ export default function PostCard({
                 </button>
             </div>
 
-            {/* Imagen principal con badge de ubicación */}
+            {/* Imagen principal o Carrusel con badge de ubicación */}
             <div className="relative">
-                <img
-                    src={imageUrl}
-                    alt={`Historia de ${userName}`}
-                    className="w-full aspect-[4/3] object-cover"
-                />
+                {images.length > 1 ? (
+                    // Carrusel simplificado sin indicadores grandes si es feed, o reutilizamos PhotoCarousel
+                    <div onClick={(e) => e.stopPropagation()}>
+                        <PhotoCarousel images={images} alt={`Historia de ${userName}`} heightClass="h-96" variant="minimal" />
+                    </div>
+                ) : images.length === 1 ? (
+                    <img
+                        src={images[0]}
+                        alt={`Historia de ${userName}`}
+                        className="w-full aspect-[4/3] object-cover"
+                    />
+                ) : null}
+                
                 {/* Badge de ubicación superpuesto */}
-                <span className="absolute top-3 right-3 inline-flex items-center gap-1 
+                <span className="absolute top-3 right-3 z-30 inline-flex items-center gap-1 
                          bg-fiesta-ink/70 text-white text-xs px-2.5 py-1 rounded-full
                          backdrop-blur-sm font-body">
                     <MapPin size={12} />

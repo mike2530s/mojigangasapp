@@ -98,3 +98,29 @@ function compressToWebP(file: File): Promise<Blob> {
         img.src = url;
     });
 }
+
+/**
+ * Elimina archivos del bucket a partir de sus URLs públicas.
+ * @param urls Array de URLs públicas de las imágenes a borrar
+ */
+export async function deleteMojigangaPhotos(urls: string[]): Promise<void> {
+    if (!urls || urls.length === 0) return;
+
+    // Extraer el path relativo (ej. "artesano_id/foto.webp") de cada URL
+    // La URL es: https://[URL]/storage/v1/object/public/mojigangas-fotos/path/to/file.webp
+    const pathsToDelete = urls.map(url => {
+        const urlParts = url.split(`/public/${BUCKET}/`);
+        return urlParts.length === 2 ? urlParts[1] : null;
+    }).filter(Boolean) as string[];
+
+    if (pathsToDelete.length === 0) return;
+
+    const { error } = await supabase.storage
+        .from(BUCKET)
+        .remove(pathsToDelete);
+
+    if (error) {
+        console.error("Error al borrar fotos en Storage:", error);
+        throw error;
+    }
+}

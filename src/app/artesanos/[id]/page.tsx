@@ -14,9 +14,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, Calendar, Tag, Package } from "lucide-react";
+import { ArrowLeft, MapPin, Calendar, Tag, Package, Plus } from "lucide-react";
 import Link from "next/link";
 import { getArtesanoById, type ArtesanoConMojigangas } from "@/lib/supabase/artesanos";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { useArtesanos } from "@/hooks/useArtesanos";
 import type { Mojiganga } from "@/lib/supabase/mojigangas";
 import T from "@/lib/i18n/T";
@@ -29,6 +30,7 @@ const FALLBACK_MOJIGANGAS: Record<string, Mojiganga[]> = {
             nombre: "Don Quijote Gigante",
             historia: "Homenaje al caballero de la Mancha, creado para el Festival Cervantino. Mide 3.5 metros y su lanza está hecha con un palo de escoba forrado en papel aluminio.",
             artesano: "Taller Linares",
+            artesano_id: "a1",
             imagen_url: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80",
             materiales: ["Carrizo reforzado", "Papel maché", "Armadura de cartón", "Pintura metálica"],
             año: 2019,
@@ -39,6 +41,7 @@ const FALLBACK_MOJIGANGAS: Record<string, Mojiganga[]> = {
             nombre: "La Catrina Eterna",
             historia: "Inspirada en la icónica obra de José Guadalupe Posada. Vestida con encajes victorianos y sombrero floral.",
             artesano: "Taller Linares",
+            artesano_id: "a1",
             imagen_url: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80",
             materiales: ["Carrizo", "Tela de encaje", "Flores de papel", "Pintura acrílica"],
             año: 2021,
@@ -110,6 +113,9 @@ export default function ArtesanoProfilePage() {
     const { artesanos: fallbackList } = useArtesanos();
     const [data, setData] = useState<ArtesanoConMojigangas | null>(null);
     const [loading, setLoading] = useState(true);
+    const { user, isAdmin } = useAuth();
+
+    const isOwnerOrAdmin = (user?.id === id) || isAdmin;
 
     useEffect(() => {
         getArtesanoById(id)
@@ -205,13 +211,21 @@ export default function ArtesanoProfilePage() {
 
                 {/* Galeria de mojigangas */}
                 <section>
-                    <h2 className="font-heading text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full bg-fiesta-cyan" />
-                        <T>Sus mojigangas</T>
-                        <span className="ml-auto bg-fiesta-ink text-white text-xs font-heading rounded-full px-2 py-0.5">
-                            {data.mojigangas.length}
-                        </span>
-                    </h2>
+                    <div className="flex items-center justify-between mb-4 gap-2">
+                        <h2 className="font-heading text-sm uppercase tracking-widest flex items-center gap-2">
+                            <span className="w-3 h-3 rounded-full flex-shrink-0 bg-fiesta-cyan" />
+                            <T>Sus mojigangas</T>
+                            <span className="bg-fiesta-ink text-white text-xs font-heading rounded-full px-2 py-0.5">
+                                {data.mojigangas.length}
+                            </span>
+                        </h2>
+                        {isOwnerOrAdmin && (
+                            <Link href="/subir-mojiganga" className="flex-shrink-0 flex items-center gap-1.5 bg-mexican-pink text-white text-xs font-heading px-3 py-1.5 rounded-full hover:opacity-90 transition-opacity shadow-sm">
+                                <Plus size={14} />
+                                <T>Subir</T>
+                            </Link>
+                        )}
+                    </div>
 
                     {data.mojigangas.length === 0 ? (
                         <div className="bg-white rounded-card p-8 text-center shadow-hard-sm">

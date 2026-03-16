@@ -163,6 +163,10 @@ export default function SubirMojigangaPage() {
         e.preventDefault();
         if (fotos.length === 0) { setError("Agrega al menos una foto."); return; }
         if (!nombre.trim()) { setError("Escribe el nombre de la mojiganga."); return; }
+        if (!historia.trim()) { setError("La historia es obligatoria."); return; }
+        if (!proceso.trim()) { setError("El proceso de creación es obligatorio."); return; }
+        if (!año.trim() || isNaN(parseInt(año))) { setError("Ingresa un año válido."); return; }
+        if (materiales.length === 0) { setError("Agrega al menos un material."); return; }
 
         setEnviando(true);
         setError(null);
@@ -182,10 +186,10 @@ export default function SubirMojigangaPage() {
             // 2. Insertar en tabla mojigangas
             const { error: dbErr } = await supabase.from("mojigangas").insert({
                 nombre: nombre.trim(),
-                historia: historia.trim() || null,
-                proceso: proceso.trim() || null,
+                historia: historia.trim(),
+                proceso: proceso.trim(),
                 artesano_id: artesanoId,
-                año: parseInt(año) || new Date().getFullYear(),
+                año: parseInt(año),
                 categoria,
                 materiales,
                 imagen_url: urls[0],          // foto principal
@@ -339,6 +343,7 @@ export default function SubirMojigangaPage() {
                         onChange={(e) => setHistoria(e.target.value)}
                         placeholder={historiaPh}
                         rows={4}
+                        required
                         maxLength={600}
                         className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
                                    px-3 py-3 outline-none focus:border-mexican-pink transition-colors resize-none break-words"
@@ -357,6 +362,7 @@ export default function SubirMojigangaPage() {
                         onChange={(e) => setProceso(e.target.value)}
                         placeholder={procesoPh}
                         rows={6}
+                        required
                         maxLength={1200}
                         className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
                                    px-3 py-3 outline-none focus:border-mexican-pink transition-colors resize-none break-words"
@@ -376,6 +382,7 @@ export default function SubirMojigangaPage() {
                             value={año}
                             onChange={(e) => setAño(e.target.value)}
                             min="1900"
+                            required
                             max={new Date().getFullYear()}
                             className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
                                        px-3 py-3 outline-none focus:border-mexican-pink transition-colors"

@@ -13,7 +13,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Menu, X, LogIn, LogOut, User, UserPlus, ImagePlus,
-    ChevronRight, Home, BookOpen, Map, Layers, Palette
+    ChevronRight, Home, BookOpen, Map, Layers, Palette, Eye, EyeOff, Heart
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth/AuthContext";
@@ -26,6 +26,7 @@ function LoginForm({ onClose }: { onClose: () => void }) {
     const { signIn } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -61,15 +62,24 @@ function LoginForm({ onClose }: { onClose: () => void }) {
                 className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
                            px-3 py-2.5 outline-none focus:border-mexican-pink transition-colors"
             />
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
-                           px-3 py-2.5 outline-none focus:border-mexican-pink transition-colors"
-            />
+            <div className="relative">
+                <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
+                               pl-3 pr-10 py-2.5 outline-none focus:border-mexican-pink transition-colors"
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-mexican-pink transition-colors"
+                >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+            </div>
             <button
                 type="submit"
                 disabled={loading}
@@ -89,6 +99,7 @@ function LoginForm({ onClose }: { onClose: () => void }) {
 function CreateArtesanoForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [nombre, setNombre] = useState("");
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -146,9 +157,22 @@ function CreateArtesanoForm() {
                 placeholder="correo del artesano" required
                 className="w-full text-xs font-body bg-white border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-mexican-pink" />
             {/* Password */}
-            <input type="password" value={password} onChange={e => setPassword(e.target.value)}
-                placeholder="contraseña (min. 6 caracteres)" minLength={6} required
-                className="w-full text-xs font-body bg-white border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-mexican-pink" />
+            <div className="relative">
+                <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="contraseña (min. 6 caracteres)" minLength={6} required
+                    className="w-full text-xs font-body bg-white border border-gray-200 rounded-xl pl-3 pr-10 py-2 outline-none focus:border-mexican-pink"
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-mexican-pink transition-colors"
+                >
+                    {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+            </div>
 
             <button type="submit" disabled={loading}
                 className="w-full bg-mexican-pink text-white font-heading text-xs py-2.5 rounded-xl
@@ -165,6 +189,7 @@ const NAV_LINKS = [
     { href: "/historias", labelEs: "Historias", icon: BookOpen },
     { href: "/mapa", labelEs: "Mapa", icon: Map },
     { href: "/catalogo", labelEs: "Catálogo", icon: Layers },
+    { href: "/acerca-de", labelEs: "Nuestra Cultura", icon: Heart },
     { href: "/artesanos", labelEs: "Artesanos", icon: Palette },
 ];
 

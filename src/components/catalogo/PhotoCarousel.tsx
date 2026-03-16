@@ -22,6 +22,7 @@ interface PhotoCarouselProps {
     alt: string;               // texto alt (nombre mojiganga)
     children?: React.ReactNode; // contenido sobre el gradiente inferior (título, badge)
     heightClass?: string;       // ej. "h-[55vh]" → default h-[55vh]
+    variant?: "default" | "minimal"; // "minimal" oculta las miniaturas para vistas más limpias
 }
 
 export default function PhotoCarousel({
@@ -29,6 +30,7 @@ export default function PhotoCarousel({
     alt,
     children,
     heightClass = "h-[55vh]",
+    variant = "default",
 }: PhotoCarouselProps) {
     const [current, setCurrent] = useState(0);
     const [direction, setDirection] = useState(0); // -1 prev / 1 next
@@ -100,8 +102,10 @@ export default function PhotoCarousel({
                 </motion.div>
             </AnimatePresence>
 
-            {/* ── Gradient overlay ── */}
-            <div className="gradient-overlay absolute inset-0 pointer-events-none z-10" />
+            {/* ── Gradient overlay (solo si no es minimal o si hay children) ── */}
+            {(variant === "default" || children) && (
+                <div className="gradient-overlay absolute inset-0 pointer-events-none z-10" />
+            )}
 
             {/* ── Counter badge ── */}
             <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-md
@@ -131,8 +135,8 @@ export default function PhotoCarousel({
                 </>
             )}
 
-            {/* ── Dot indicators + thumbnails ── */}
-            <div className="absolute bottom-20 left-0 right-0 z-20 flex justify-center gap-1.5 pointer-events-none">
+            {/* ── Dot indicators ── */}
+            <div className={`absolute ${variant === "minimal" ? "bottom-4" : "bottom-20"} left-0 right-0 z-20 flex justify-center gap-1.5 pointer-events-none`}>
                 {images.map((_, i) => (
                     <button
                         key={i}
@@ -152,22 +156,24 @@ export default function PhotoCarousel({
                 ))}
             </div>
 
-            {/* ── Thumbnail strip ── */}
-            <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center gap-2 px-4">
-                {images.map((src, i) => (
-                    <button
-                        key={i}
-                        onClick={() => go(i)}
-                        className={`relative flex-shrink-0 transition-all duration-300 rounded-xl overflow-hidden
-                                    ${i === current
-                                ? "w-14 h-14 ring-2 ring-mexican-pink ring-offset-1 ring-offset-black/30"
-                                : "w-10 h-10 opacity-60 hover:opacity-90"
-                            }`}
-                    >
-                        <img src={src} alt="" className="w-full h-full object-cover" />
-                    </button>
-                ))}
-            </div>
+            {/* ── Thumbnail strip (solo default) ── */}
+            {variant === "default" && (
+                <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center gap-2 px-4">
+                    {images.map((src, i) => (
+                        <button
+                            key={i}
+                            onClick={() => go(i)}
+                            className={`relative flex-shrink-0 transition-all duration-300 rounded-xl overflow-hidden
+                                        ${i === current
+                                    ? "w-14 h-14 ring-2 ring-mexican-pink ring-offset-1 ring-offset-black/30"
+                                    : "w-10 h-10 opacity-60 hover:opacity-90"
+                                }`}
+                        >
+                            <img src={src} alt="" className="w-full h-full object-cover" />
+                        </button>
+                    ))}
+                </div>
+            )}
 
             {/* ── Title / children overlay ── */}
             {children && (

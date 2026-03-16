@@ -1,0 +1,704 @@
+diff --git a/package-lock.json b/package-lock.json
+index 1251657..b8e170b 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -17,7 +17,8 @@
+         "next": "14.2.35",
+         "react": "^18",
+         "react-dom": "^18",
+-        "react-leaflet": "^4.2.1"
++        "react-leaflet": "^4.2.1",
++        "sonner": "^2.0.7"
+       },
+       "devDependencies": {
+         "@types/node": "^20",
+@@ -4909,6 +4910,15 @@
+         "url": "https://github.com/sponsors/isaacs"
+       }
+     },
++    "node_modules/sonner": {
++      "version": "2.0.7",
++      "resolved": "https://registry.npmjs.org/sonner/-/sonner-2.0.7.tgz",
++      "integrity": "sha512-W6ZN4p58k8aDKA4XPcx2hpIQXBRAgyiWVkYhT7CvK6D3iAu7xjvVyhQHg2/iaKJZ1XVJ4r7XuwGL+WGEK37i9w==",
++      "peerDependencies": {
++        "react": "^18.0.0 || ^19.0.0 || ^19.0.0-rc",
++        "react-dom": "^18.0.0 || ^19.0.0 || ^19.0.0-rc"
++      }
++    },
+     "node_modules/source-map-js": {
+       "version": "1.2.1",
+       "resolved": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",
+diff --git a/package.json b/package.json
+index 7dab36c..5ce8dab 100644
+--- a/package.json
++++ b/package.json
+@@ -18,7 +18,8 @@
+     "next": "14.2.35",
+     "react": "^18",
+     "react-dom": "^18",
+-    "react-leaflet": "^4.2.1"
++    "react-leaflet": "^4.2.1",
++    "sonner": "^2.0.7"
+   },
+   "devDependencies": {
+     "@types/node": "^20",
+diff --git a/src/app/artesanos/[id]/page.tsx b/src/app/artesanos/[id]/page.tsx
+index 152a75a..6b5ab2c 100644
+--- a/src/app/artesanos/[id]/page.tsx
++++ b/src/app/artesanos/[id]/page.tsx
+@@ -14,9 +14,10 @@
+ import { useEffect, useState } from "react";
+ import { useParams, useRouter } from "next/navigation";
+ import { motion } from "framer-motion";
+-import { ArrowLeft, MapPin, Calendar, Tag, Package } from "lucide-react";
++import { ArrowLeft, MapPin, Calendar, Tag, Package, Plus } from "lucide-react";
+ import Link from "next/link";
+ import { getArtesanoById, type ArtesanoConMojigangas } from "@/lib/supabase/artesanos";
++import { useAuth } from "@/lib/auth/AuthContext";
+ import { useArtesanos } from "@/hooks/useArtesanos";
+ import type { Mojiganga } from "@/lib/supabase/mojigangas";
+ import T from "@/lib/i18n/T";
+@@ -29,6 +30,7 @@ const FALLBACK_MOJIGANGAS: Record<string, Mojiganga[]> = {
+             nombre: "Don Quijote Gigante",
+             historia: "Homenaje al caballero de la Mancha, creado para el Festival Cervantino. Mide 3.5 metros y su lanza est?? hecha con un palo de escoba forrado en papel aluminio.",
+             artesano: "Taller Linares",
++            artesano_id: "a1",
+             imagen_url: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600&q=80",
+             materiales: ["Carrizo reforzado", "Papel mach??", "Armadura de cart??n", "Pintura met??lica"],
+             a??o: 2019,
+@@ -39,6 +41,7 @@ const FALLBACK_MOJIGANGAS: Record<string, Mojiganga[]> = {
+             nombre: "La Catrina Eterna",
+             historia: "Inspirada en la ic??nica obra de Jos?? Guadalupe Posada. Vestida con encajes victorianos y sombrero floral.",
+             artesano: "Taller Linares",
++            artesano_id: "a1",
+             imagen_url: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80",
+             materiales: ["Carrizo", "Tela de encaje", "Flores de papel", "Pintura acr??lica"],
+             a??o: 2021,
+@@ -110,6 +113,9 @@ export default function ArtesanoProfilePage() {
+     const { artesanos: fallbackList } = useArtesanos();
+     const [data, setData] = useState<ArtesanoConMojigangas | null>(null);
+     const [loading, setLoading] = useState(true);
++    const { user, isAdmin } = useAuth();
++
++    const isOwnerOrAdmin = (user?.id === id) || isAdmin;
+ 
+     useEffect(() => {
+         getArtesanoById(id)
+@@ -205,13 +211,21 @@ export default function ArtesanoProfilePage() {
+ 
+                 {/* Galeria de mojigangas */}
+                 <section>
+-                    <h2 className="font-heading text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
+-                        <span className="w-3 h-3 rounded-full bg-fiesta-cyan" />
+-                        <T>Sus mojigangas</T>
+-                        <span className="ml-auto bg-fiesta-ink text-white text-xs font-heading rounded-full px-2 py-0.5">
+-                            {data.mojigangas.length}
+-                        </span>
+-                    </h2>
++                    <div className="flex items-center justify-between mb-4 gap-2">
++                        <h2 className="font-heading text-sm uppercase tracking-widest flex items-center gap-2">
++                            <span className="w-3 h-3 rounded-full flex-shrink-0 bg-fiesta-cyan" />
++                            <T>Sus mojigangas</T>
++                            <span className="bg-fiesta-ink text-white text-xs font-heading rounded-full px-2 py-0.5">
++                                {data.mojigangas.length}
++                            </span>
++                        </h2>
++                        {isOwnerOrAdmin && (
++                            <Link href="/subir-mojiganga" className="flex-shrink-0 flex items-center gap-1.5 bg-mexican-pink text-white text-xs font-heading px-3 py-1.5 rounded-full hover:opacity-90 transition-opacity shadow-sm">
++                                <Plus size={14} />
++                                <T>Subir</T>
++                            </Link>
++                        )}
++                    </div>
+ 
+                     {data.mojigangas.length === 0 ? (
+                         <div className="bg-white rounded-card p-8 text-center shadow-hard-sm">
+diff --git a/src/app/catalogo/[id]/page.tsx b/src/app/catalogo/[id]/page.tsx
+index 441c85f..2a18c66 100644
+--- a/src/app/catalogo/[id]/page.tsx
++++ b/src/app/catalogo/[id]/page.tsx
+@@ -12,11 +12,15 @@
+ import { useEffect, useState } from "react";
+ import { useParams, useRouter } from "next/navigation";
+ import { motion } from "framer-motion";
+-import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
+-import { getMojigangaById, type Mojiganga } from "@/lib/supabase/mojigangas";
++import { ArrowLeft, Calendar, User, Tag, Edit2, Trash2, Loader2 } from "lucide-react";
++import Link from "next/link";
++import { getMojigangaById, deleteMojiganga, type Mojiganga } from "@/lib/supabase/mojigangas";
++import { deleteMojigangaPhotos } from "@/lib/supabase/storage";
++import { useAuth } from "@/lib/auth/AuthContext";
+ import { useMojigangas } from "@/hooks/useMojigangas";
+ import T from "@/lib/i18n/T";
+ import PhotoCarousel from "@/components/catalogo/PhotoCarousel";
++import { toast } from "sonner";
+ 
+ export default function MojigangaDetailPage() {
+     const params = useParams();
+@@ -26,6 +30,8 @@ export default function MojigangaDetailPage() {
+     const { mojigangas } = useMojigangas();
+     const [mojiganga, setMojiganga] = useState<Mojiganga | null>(null);
+     const [loading, setLoading] = useState(true);
++    const [deleting, setDeleting] = useState(false);
++    const { user, isAdmin } = useAuth();
+ 
+     useEffect(() => {
+         async function fetchData() {
+@@ -73,6 +79,26 @@ export default function MojigangaDetailPage() {
+                 ? [mojiganga.imagen_url]
+                 : [];
+ 
++    const isOwnerOrAdmin = mojiganga && ((user?.id === (mojiganga as any).artesano_id) || isAdmin);
++
++    const handleDelete = async () => {
++        if (!confirm("??Seguro que quieres eliminar esta mojiganga del cat??logo?")) return;
++        setDeleting(true);
++        try {
++            if (photos.length > 0) {
++                await deleteMojigangaPhotos(photos);
++            }
++            await deleteMojiganga(id);
++            toast.success("Mojiganga eliminada correctamente.");
++            router.push("/catalogo");
++        } catch (error) {
++            console.error(error);
++            toast.error("Error al eliminar. Intenta de nuevo.");
++        } finally {
++            setDeleting(false);
++        }
++    };
++
+     return (
+         <main className="min-h-screen bg-paper-white">
+ 
+@@ -162,6 +188,26 @@ export default function MojigangaDetailPage() {
+                     </>
+                 )}
+ 
++                {/* Controles de Artesano / Admin */}
++                {isOwnerOrAdmin && (
++                    <div className="flex items-center gap-3 mb-8">
++                        <Link
++                            href={`/editar-mojiganga/${id}`}
++                            className="flex-1 btn-outline flex items-center justify-center gap-2 border-fiesta-cyan text-fiesta-cyan hover:bg-fiesta-cyan"
++                        >
++                            <Edit2 size={16} /> <T>Editar</T>
++                        </Link>
++                        <button
++                            onClick={handleDelete}
++                            disabled={deleting}
++                            className="flex-1 btn-outline flex items-center justify-center gap-2 border-red-500 text-red-500 hover:bg-red-500 disabled:opacity-50"
++                        >
++                            {deleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
++                            <T>{deleting ? "Borrando..." : "Eliminar"}</T>
++                        </button>
++                    </div>
++                )}
++
+                 {/* Bot??n volver */}
+                 <button onClick={() => router.push("/catalogo")} className="btn-outline w-full justify-center">
+                     <T>Ver todo el Cat??logo</T>
+diff --git a/src/app/historias/page.tsx b/src/app/historias/page.tsx
+index 06702ba..903a4e7 100644
+--- a/src/app/historias/page.tsx
++++ b/src/app/historias/page.tsx
+@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
+ import StoriesRow from "@/components/historias/StoriesRow";
+ import PostCard from "@/components/historias/PostCard";
+ import FloatingButton from "@/components/historias/FloatingButton";
++import PhotoCarousel from "@/components/catalogo/PhotoCarousel";
+ import { useHistorias } from "@/hooks/useHistorias";
+ import { useTranslation } from "@/lib/i18n/LangContext";
+ import T from "@/lib/i18n/T";
+@@ -50,7 +51,7 @@ function useTimeAgo(dateStr: string): string {
+     }
+ }
+ 
+-function PostWrapper({ h, onClick }: { h: Parameters<typeof PostCard>[0] & { created_at: string }, onClick: () => void }) {
++function PostWrapper({ h, onClick }: { h: Parameters<typeof PostCard>[0] & { created_at: string, imageUrls?: string[] }, onClick: () => void }) {
+     const timeAgo = useTimeAgo(h.created_at);
+     return (
+         <PostCard
+@@ -59,6 +60,7 @@ function PostWrapper({ h, onClick }: { h: Parameters<typeof PostCard>[0] & { cre
+             location={h.location}
+             timeAgo={timeAgo}
+             imageUrl={h.imageUrl}
++            imageUrls={h.imageUrls}
+             caption={h.caption}
+             onClick={onClick}
+         />
+@@ -158,6 +160,7 @@ export default function HistoriasPage() {
+                                     location: h.ubicacion_nombre || "M??xico",
+                                     timeAgo: "",
+                                     imageUrl: h.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80",
++                                    imageUrls: h.fotos_urls && h.fotos_urls.length > 0 ? h.fotos_urls : (h.foto_url ? [h.foto_url] : []),
+                                     caption: h.relato,
+                                 }}
+                                 onClick={() => setSelectedStoryId(h.id)}
+@@ -193,11 +196,19 @@ export default function HistoriasPage() {
+ 
+                                 {/* Foto principal o carrusel si hay varias */}
+                                 <div className="h-96 w-full bg-gray-100 relative">
+-                                    <img
+-                                        src={story.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80"}
+-                                        alt="Historia destacada"
+-                                        className="w-full h-full object-cover"
+-                                    />
++                                    {story.fotos_urls && story.fotos_urls.length > 1 ? (
++                                        <PhotoCarousel 
++                                            images={story.fotos_urls} 
++                                            alt={story.usuario_nombre} 
++                                            heightClass="h-96" variant="minimal" 
++                                        />
++                                    ) : (
++                                        <img
++                                            src={story.foto_url || "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80"}
++                                            alt="Historia destacada"
++                                            className="w-full h-full object-cover"
++                                        />
++                                    )}
+                                 </div>
+ 
+                                 {/* Info */}
+diff --git a/src/app/layout.tsx b/src/app/layout.tsx
+index c9fc792..2745a6f 100644
+--- a/src/app/layout.tsx
++++ b/src/app/layout.tsx
+@@ -13,6 +13,7 @@ import BottomNav from "@/components/navigation/BottomNav";
+ import ConsentBanner from "@/components/ConsentBanner";
+ import { LangProvider } from "@/lib/i18n/LangContext";
+ import { AuthProvider } from "@/lib/auth/AuthContext";
++import { Toaster } from "sonner";
+ import "./globals.css";
+ 
+ const playfair = Playfair_Display({
+@@ -82,6 +83,7 @@ export default function RootLayout({
+       <body className="font-body antialiased bg-paper-white text-fiesta-ink">
+         <LangProvider>
+           <AuthProvider>
++            <Toaster position="top-center" richColors />
+             {children}
+             <BottomNav />
+             <ConsentBanner />
+diff --git a/src/app/subir-mojiganga/page.tsx b/src/app/subir-mojiganga/page.tsx
+index e86e6a5..81d24e2 100644
+--- a/src/app/subir-mojiganga/page.tsx
++++ b/src/app/subir-mojiganga/page.tsx
+@@ -163,6 +163,10 @@ export default function SubirMojigangaPage() {
+         e.preventDefault();
+         if (fotos.length === 0) { setError("Agrega al menos una foto."); return; }
+         if (!nombre.trim()) { setError("Escribe el nombre de la mojiganga."); return; }
++        if (!historia.trim()) { setError("La historia es obligatoria."); return; }
++        if (!proceso.trim()) { setError("El proceso de creaci??n es obligatorio."); return; }
++        if (!a??o.trim() || isNaN(parseInt(a??o))) { setError("Ingresa un a??o v??lido."); return; }
++        if (materiales.length === 0) { setError("Agrega al menos un material."); return; }
+ 
+         setEnviando(true);
+         setError(null);
+@@ -182,10 +186,10 @@ export default function SubirMojigangaPage() {
+             // 2. Insertar en tabla mojigangas
+             const { error: dbErr } = await supabase.from("mojigangas").insert({
+                 nombre: nombre.trim(),
+-                historia: historia.trim() || null,
+-                proceso: proceso.trim() || null,
++                historia: historia.trim(),
++                proceso: proceso.trim(),
+                 artesano_id: artesanoId,
+-                a??o: parseInt(a??o) || new Date().getFullYear(),
++                a??o: parseInt(a??o),
+                 categoria,
+                 materiales,
+                 imagen_url: urls[0],          // foto principal
+@@ -339,6 +343,7 @@ export default function SubirMojigangaPage() {
+                         onChange={(e) => setHistoria(e.target.value)}
+                         placeholder={historiaPh}
+                         rows={4}
++                        required
+                         maxLength={600}
+                         className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
+                                    px-3 py-3 outline-none focus:border-mexican-pink transition-colors resize-none break-words"
+@@ -357,6 +362,7 @@ export default function SubirMojigangaPage() {
+                         onChange={(e) => setProceso(e.target.value)}
+                         placeholder={procesoPh}
+                         rows={6}
++                        required
+                         maxLength={1200}
+                         className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
+                                    px-3 py-3 outline-none focus:border-mexican-pink transition-colors resize-none break-words"
+@@ -376,6 +382,7 @@ export default function SubirMojigangaPage() {
+                             value={a??o}
+                             onChange={(e) => setA??o(e.target.value)}
+                             min="1900"
++                            required
+                             max={new Date().getFullYear()}
+                             className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
+                                        px-3 py-3 outline-none focus:border-mexican-pink transition-colors"
+diff --git a/src/components/catalogo/PhotoCarousel.tsx b/src/components/catalogo/PhotoCarousel.tsx
+index 525d945..d6ce6c7 100644
+--- a/src/components/catalogo/PhotoCarousel.tsx
++++ b/src/components/catalogo/PhotoCarousel.tsx
+@@ -22,6 +22,7 @@ interface PhotoCarouselProps {
+     alt: string;               // texto alt (nombre mojiganga)
+     children?: React.ReactNode; // contenido sobre el gradiente inferior (t??tulo, badge)
+     heightClass?: string;       // ej. "h-[55vh]" ??? default h-[55vh]
++    variant?: "default" | "minimal"; // "minimal" oculta las miniaturas para vistas m??s limpias
+ }
+ 
+ export default function PhotoCarousel({
+@@ -29,6 +30,7 @@ export default function PhotoCarousel({
+     alt,
+     children,
+     heightClass = "h-[55vh]",
++    variant = "default",
+ }: PhotoCarouselProps) {
+     const [current, setCurrent] = useState(0);
+     const [direction, setDirection] = useState(0); // -1 prev / 1 next
+@@ -100,8 +102,10 @@ export default function PhotoCarousel({
+                 </motion.div>
+             </AnimatePresence>
+ 
+-            {/* ?????? Gradient overlay ?????? */}
+-            <div className="gradient-overlay absolute inset-0 pointer-events-none z-10" />
++            {/* ?????? Gradient overlay (solo si no es minimal o si hay children) ?????? */}
++            {(variant === "default" || children) && (
++                <div className="gradient-overlay absolute inset-0 pointer-events-none z-10" />
++            )}
+ 
+             {/* ?????? Counter badge ?????? */}
+             <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-md
+@@ -131,8 +135,8 @@ export default function PhotoCarousel({
+                 </>
+             )}
+ 
+-            {/* ?????? Dot indicators + thumbnails ?????? */}
+-            <div className="absolute bottom-20 left-0 right-0 z-20 flex justify-center gap-1.5 pointer-events-none">
++            {/* ?????? Dot indicators ?????? */}
++            <div className={`absolute ${variant === "minimal" ? "bottom-4" : "bottom-20"} left-0 right-0 z-20 flex justify-center gap-1.5 pointer-events-none`}>
+                 {images.map((_, i) => (
+                     <button
+                         key={i}
+@@ -152,22 +156,24 @@ export default function PhotoCarousel({
+                 ))}
+             </div>
+ 
+-            {/* ?????? Thumbnail strip ?????? */}
+-            <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center gap-2 px-4">
+-                {images.map((src, i) => (
+-                    <button
+-                        key={i}
+-                        onClick={() => go(i)}
+-                        className={`relative flex-shrink-0 transition-all duration-300 rounded-xl overflow-hidden
+-                                    ${i === current
+-                                ? "w-14 h-14 ring-2 ring-mexican-pink ring-offset-1 ring-offset-black/30"
+-                                : "w-10 h-10 opacity-60 hover:opacity-90"
+-                            }`}
+-                    >
+-                        <img src={src} alt="" className="w-full h-full object-cover" />
+-                    </button>
+-                ))}
+-            </div>
++            {/* ?????? Thumbnail strip (solo default) ?????? */}
++            {variant === "default" && (
++                <div className="absolute bottom-3 left-0 right-0 z-20 flex justify-center gap-2 px-4">
++                    {images.map((src, i) => (
++                        <button
++                            key={i}
++                            onClick={() => go(i)}
++                            className={`relative flex-shrink-0 transition-all duration-300 rounded-xl overflow-hidden
++                                        ${i === current
++                                    ? "w-14 h-14 ring-2 ring-mexican-pink ring-offset-1 ring-offset-black/30"
++                                    : "w-10 h-10 opacity-60 hover:opacity-90"
++                                }`}
++                        >
++                            <img src={src} alt="" className="w-full h-full object-cover" />
++                        </button>
++                    ))}
++                </div>
++            )}
+ 
+             {/* ?????? Title / children overlay ?????? */}
+             {children && (
+diff --git a/src/components/historias/PostCard.tsx b/src/components/historias/PostCard.tsx
+index 868b68c..1224add 100644
+--- a/src/components/historias/PostCard.tsx
++++ b/src/components/historias/PostCard.tsx
+@@ -12,13 +12,15 @@
+ 
+ import { motion } from "framer-motion";
+ import { MapPin, MoreHorizontal } from "lucide-react";
++import PhotoCarousel from "@/components/catalogo/PhotoCarousel";
+ 
+ interface PostCardProps {
+     userName: string;
+     avatarUrl: string;
+     location: string;
+     timeAgo: string;
+-    imageUrl: string;
++    imageUrl?: string;
++    imageUrls?: string[];
+     caption?: string;
+     onClick?: () => void;
+ }
+@@ -29,9 +31,12 @@ export default function PostCard({
+     location,
+     timeAgo,
+     imageUrl,
++    imageUrls,
+     caption,
+     onClick,
+ }: PostCardProps) {
++    const images = imageUrls?.length ? imageUrls : imageUrl ? [imageUrl] : [];
++    
+     return (
+         <motion.article
+             initial={{ opacity: 0, scale: 0.95 }}
+@@ -60,15 +65,23 @@ export default function PostCard({
+                 </button>
+             </div>
+ 
+-            {/* Imagen principal con badge de ubicaci??n */}
++            {/* Imagen principal o Carrusel con badge de ubicaci??n */}
+             <div className="relative">
+-                <img
+-                    src={imageUrl}
+-                    alt={`Historia de ${userName}`}
+-                    className="w-full aspect-[4/3] object-cover"
+-                />
++                {images.length > 1 ? (
++                    // Carrusel simplificado sin indicadores grandes si es feed, o reutilizamos PhotoCarousel
++                    <div onClick={(e) => e.stopPropagation()}>
++                        <PhotoCarousel images={images} alt={`Historia de ${userName}`} heightClass="h-96" variant="minimal" />
++                    </div>
++                ) : images.length === 1 ? (
++                    <img
++                        src={images[0]}
++                        alt={`Historia de ${userName}`}
++                        className="w-full aspect-[4/3] object-cover"
++                    />
++                ) : null}
++                
+                 {/* Badge de ubicaci??n superpuesto */}
+-                <span className="absolute top-3 right-3 inline-flex items-center gap-1 
++                <span className="absolute top-3 right-3 z-30 inline-flex items-center gap-1 
+                          bg-fiesta-ink/70 text-white text-xs px-2.5 py-1 rounded-full
+                          backdrop-blur-sm font-body">
+                     <MapPin size={12} />
+diff --git a/src/components/navigation/HamburgerDrawer.tsx b/src/components/navigation/HamburgerDrawer.tsx
+index 637c972..ed05528 100644
+--- a/src/components/navigation/HamburgerDrawer.tsx
++++ b/src/components/navigation/HamburgerDrawer.tsx
+@@ -13,7 +13,7 @@ import { useState } from "react";
+ import { motion, AnimatePresence } from "framer-motion";
+ import {
+     Menu, X, LogIn, LogOut, User, UserPlus, ImagePlus,
+-    ChevronRight, Home, BookOpen, Map, Layers, Palette
++    ChevronRight, Home, BookOpen, Map, Layers, Palette, Eye, EyeOff, Heart
+ } from "lucide-react";
+ import Link from "next/link";
+ import { useAuth } from "@/lib/auth/AuthContext";
+@@ -26,6 +26,7 @@ function LoginForm({ onClose }: { onClose: () => void }) {
+     const { signIn } = useAuth();
+     const [email, setEmail] = useState("");
+     const [password, setPassword] = useState("");
++    const [showPassword, setShowPassword] = useState(false);
+     const [loading, setLoading] = useState(false);
+     const [error, setError] = useState<string | null>(null);
+ 
+@@ -61,15 +62,24 @@ function LoginForm({ onClose }: { onClose: () => void }) {
+                 className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
+                            px-3 py-2.5 outline-none focus:border-mexican-pink transition-colors"
+             />
+-            <input
+-                type="password"
+-                value={password}
+-                onChange={(e) => setPassword(e.target.value)}
+-                placeholder="????????????????????????"
+-                required
+-                className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
+-                           px-3 py-2.5 outline-none focus:border-mexican-pink transition-colors"
+-            />
++            <div className="relative">
++                <input
++                    type={showPassword ? "text" : "password"}
++                    value={password}
++                    onChange={(e) => setPassword(e.target.value)}
++                    placeholder="????????????????????????"
++                    required
++                    className="w-full text-sm font-body bg-white border border-gray-200 rounded-xl
++                               pl-3 pr-10 py-2.5 outline-none focus:border-mexican-pink transition-colors"
++                />
++                <button
++                    type="button"
++                    onClick={() => setShowPassword(!showPassword)}
++                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-mexican-pink transition-colors"
++                >
++                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
++                </button>
++            </div>
+             <button
+                 type="submit"
+                 disabled={loading}
+@@ -89,6 +99,7 @@ function LoginForm({ onClose }: { onClose: () => void }) {
+ function CreateArtesanoForm() {
+     const [email, setEmail] = useState("");
+     const [password, setPassword] = useState("");
++    const [showPassword, setShowPassword] = useState(false);
+     const [nombre, setNombre] = useState("");
+     const [loading, setLoading] = useState(false);
+     const [success, setSuccess] = useState(false);
+@@ -146,9 +157,22 @@ function CreateArtesanoForm() {
+                 placeholder="correo del artesano" required
+                 className="w-full text-xs font-body bg-white border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-mexican-pink" />
+             {/* Password */}
+-            <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+-                placeholder="contrase??a (min. 6 caracteres)" minLength={6} required
+-                className="w-full text-xs font-body bg-white border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-mexican-pink" />
++            <div className="relative">
++                <input
++                    type={showPassword ? "text" : "password"}
++                    value={password}
++                    onChange={e => setPassword(e.target.value)}
++                    placeholder="contrase??a (min. 6 caracteres)" minLength={6} required
++                    className="w-full text-xs font-body bg-white border border-gray-200 rounded-xl pl-3 pr-10 py-2 outline-none focus:border-mexican-pink"
++                />
++                <button
++                    type="button"
++                    onClick={() => setShowPassword(!showPassword)}
++                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-mexican-pink transition-colors"
++                >
++                    {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
++                </button>
++            </div>
+ 
+             <button type="submit" disabled={loading}
+                 className="w-full bg-mexican-pink text-white font-heading text-xs py-2.5 rounded-xl
+@@ -165,6 +189,7 @@ const NAV_LINKS = [
+     { href: "/historias", labelEs: "Historias", icon: BookOpen },
+     { href: "/mapa", labelEs: "Mapa", icon: Map },
+     { href: "/catalogo", labelEs: "Cat??logo", icon: Layers },
++    { href: "/acerca-de", labelEs: "Nuestra Cultura", icon: Heart },
+     { href: "/artesanos", labelEs: "Artesanos", icon: Palette },
+ ];
+ 
+diff --git a/src/hooks/useMojigangas.ts b/src/hooks/useMojigangas.ts
+index 62c1838..a51a203 100644
+--- a/src/hooks/useMojigangas.ts
++++ b/src/hooks/useMojigangas.ts
+@@ -14,32 +14,32 @@ import { getMojigangas, type Mojiganga } from "@/lib/supabase/mojigangas";
+ const FALLBACK_DATA: Mojiganga[] = [
+     {
+         id: "m1", nombre: "La Catrina Do??a Josefa", historia: "Creada para las fiestas de 1998...",
+-        artesano: "Don Pedro Linares", imagen_url: "https://images.unsplash.com/photo-1604265179512-4c34e3ee5c28?w=400&q=80",
++        artesano: "Don Pedro Linares", artesano_id: "a1", imagen_url: "https://images.unsplash.com/photo-1604265179512-4c34e3ee5c28?w=400&q=80",
+         materiales: ["Carrizo", "Papel", "Pintura"], a??o: 1998, categoria: "Calavera",
+     },
+     {
+         id: "m2", nombre: "El Diablo de Carnaval", historia: "Figura sat??rica del carnaval...",
+-        artesano: "Mar??a Hern??ndez", imagen_url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80",
++        artesano: "Mar??a Hern??ndez", artesano_id: "a2", imagen_url: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80",
+         materiales: ["Carrizo", "Tela", "Pintura"], a??o: 2005, categoria: "Fant??stico",
+     },
+     {
+         id: "m3", nombre: "La Novia del Pueblo", historia: "Representa las bodas tradicionales...",
+-        artesano: "Jos?? Garc??a", imagen_url: "https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80",
++        artesano: "Jos?? Garc??a", artesano_id: "a3", imagen_url: "https://images.unsplash.com/photo-1590736704728-f4730bb30770?w=400&q=80",
+         materiales: ["Carrizo", "Encaje", "Papel"], a??o: 2012, categoria: "Tradici??n",
+     },
+     {
+         id: "m4", nombre: "Don Quijote Gigante", historia: "Homenaje al caballero de la Mancha...",
+-        artesano: "Taller Linares", imagen_url: "https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=400&q=80",
++        artesano: "Taller Linares", artesano_id: "a1", imagen_url: "https://images.unsplash.com/photo-1533929736458-ca588d08cbe?w=400&q=80",
+         materiales: ["Carrizo", "Papel mach??", "Metal"], a??o: 2019, categoria: "Literario",
+     },
+     {
+         id: "m5", nombre: "La Adelita Revolucionaria", historia: "Homenaje a las mujeres de la revoluci??n...",
+-        artesano: "Carmen Vidal", imagen_url: "https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=400&q=80",
++        artesano: "Carmen Vidal", artesano_id: "a4", imagen_url: "https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=400&q=80",
+         materiales: ["Carrizo", "Tela", "Pintura"], a??o: 2001, categoria: "Hist??rico",
+     },
+     {
+         id: "m6", nombre: "El M??sico del Valle", historia: "Celebra la m??sica tradicional...",
+-        artesano: "Don Ferm??n", imagen_url: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&q=80",
++        artesano: "Don Ferm??n", artesano_id: "a5", imagen_url: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&q=80",
+         materiales: ["Carrizo", "Papel", "Instrumento"], a??o: 2015, categoria: "Musical",
+     },
+ ];
+diff --git a/src/lib/supabase/mojigangas.ts b/src/lib/supabase/mojigangas.ts
+index e586c3c..1e4fee5 100644
+--- a/src/lib/supabase/mojigangas.ts
++++ b/src/lib/supabase/mojigangas.ts
+@@ -14,6 +14,7 @@ export interface Mojiganga {
+     historia: string;
+     proceso?: string;
+     artesano: string;
++    artesano_id: string;
+     imagen_url: string;
+     imagenes_urls?: string[];
+     materiales: string[];
+@@ -43,3 +44,32 @@ export async function getMojigangaById(id: string) {
+     if (error) throw error;
+     return data as Mojiganga;
+ }
++
++/** 
++ * Actualizar una mojiganga existente 
++ * Nota: El RLS de Supabase impedir?? esto si el usuario no es due??o 
++ */
++export async function updateMojiganga(id: string, updates: Partial<Mojiganga>) {
++    const { data, error } = await supabase
++        .from("mojigangas")
++        .update(updates)
++        .eq("id", id)
++        .select()
++        .single();
++
++    if (error) throw error;
++    return data as Mojiganga;
++}
++
++/** 
++ * Eliminar una mojiganga por ID 
++ * Nota: El RLS de Supabase impedir?? esto si el usuario no es due??o 
++ */
++export async function deleteMojiganga(id: string) {
++    const { error } = await supabase
++        .from("mojigangas")
++        .delete()
++        .eq("id", id);
++
++    if (error) throw error;
++}
+diff --git a/src/lib/supabase/storage.ts b/src/lib/supabase/storage.ts
+index 602f951..33ee493 100644
+--- a/src/lib/supabase/storage.ts
++++ b/src/lib/supabase/storage.ts
+@@ -98,3 +98,29 @@ function compressToWebP(file: File): Promise<Blob> {
+         img.src = url;
+     });
+ }
++
++/**
++ * Elimina archivos del bucket a partir de sus URLs p??blicas.
++ * @param urls Array de URLs p??blicas de las im??genes a borrar
++ */
++export async function deleteMojigangaPhotos(urls: string[]): Promise<void> {
++    if (!urls || urls.length === 0) return;
++
++    // Extraer el path relativo (ej. "artesano_id/foto.webp") de cada URL
++    // La URL es: https://[URL]/storage/v1/object/public/mojigangas-fotos/path/to/file.webp
++    const pathsToDelete = urls.map(url => {
++        const urlParts = url.split(`/public/${BUCKET}/`);
++        return urlParts.length === 2 ? urlParts[1] : null;
++    }).filter(Boolean) as string[];
++
++    if (pathsToDelete.length === 0) return;
++
++    const { error } = await supabase.storage
++        .from(BUCKET)
++        .remove(pathsToDelete);
++
++    if (error) {
++        console.error("Error al borrar fotos en Storage:", error);
++        throw error;
++    }
++}

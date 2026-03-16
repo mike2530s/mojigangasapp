@@ -13,6 +13,7 @@ import BottomNav from "@/components/navigation/BottomNav";
 import ConsentBanner from "@/components/ConsentBanner";
 import { LangProvider } from "@/lib/i18n/LangContext";
 import { AuthProvider } from "@/lib/auth/AuthContext";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -82,6 +83,7 @@ export default function RootLayout({
       <body className="font-body antialiased bg-paper-white text-fiesta-ink">
         <LangProvider>
           <AuthProvider>
+            <Toaster position="top-center" richColors />
             {children}
             <BottomNav />
             <ConsentBanner />
