@@ -16,6 +16,7 @@ import { motion } from "framer-motion";
 import Header from "@/components/navigation/Header";
 import PolaroidCard from "@/components/catalogo/PolaroidCard";
 import DarkDetailCard from "@/components/catalogo/DarkDetailCard";
+import { PolaroidSkeleton } from "@/components/ui/Skeleton";
 import { useMojigangas } from "@/hooks/useMojigangas";
 import T from "@/lib/i18n/T";
 import Link from "next/link";
@@ -72,8 +73,8 @@ export default function CatalogoPage() {
             <section className="px-5 mb-8">
                 {loading ? (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="aspect-[3/4] bg-gray-200 rounded-card animate-pulse" />
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                            <PolaroidSkeleton key={i} />
                         ))}
                     </div>
                 ) : (

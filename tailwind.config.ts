@@ -68,12 +68,17 @@ const config: Config = {
           "0%": { transform: "rotate(0deg)", opacity: "0" },
           "100%": { transform: "rotate(-2deg)", opacity: "1" },
         },
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "slide-up": "slide-up 0.4s ease-out",
         "fade-in": "fade-in 0.3s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
         "polaroid-tilt": "polaroid-tilt 0.5s ease-out forwards",
+        shimmer: "shimmer 1.6s infinite",
       },
     },
   },

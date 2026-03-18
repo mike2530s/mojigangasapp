@@ -22,6 +22,7 @@ import { useTranslation } from "@/lib/i18n/LangContext";
 import T from "@/lib/i18n/T";
 import { useText } from "@/lib/i18n/useText";
 import HamburgerDrawer from "@/components/navigation/HamburgerDrawer";
+import { PostCardSkeleton, StoriesRowSkeleton } from "@/components/ui/Skeleton";
 
 const feedVariants = {
     hidden: { opacity: 0 },
@@ -145,7 +146,7 @@ export default function HistoriasPage() {
             {loading ? (
                 <div className="px-5 space-y-5 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
                     {[1, 2, 3].map((i) => (
-                        <div key={i} className="bg-white rounded-card h-64 animate-pulse shadow-hard-sm" />
+                        <PostCardSkeleton key={i} />
                     ))}
                 </div>
             ) : (
