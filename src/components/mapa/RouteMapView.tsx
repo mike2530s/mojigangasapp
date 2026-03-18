@@ -111,14 +111,6 @@ export default function RouteMapView({
 
     return (
         <div className="relative w-full h-full">
-            {/* ── Admin banner ──────────────────── */}
-            {isAdmin && (
-                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-[400]
-                                bg-fiesta-ink text-white font-heading text-[11px] sm:text-xs px-4 py-2
-                                rounded-full shadow-lg pointer-events-none whitespace-nowrap">
-                    ✏️ Modo Admin — toca el mapa para agregar un punto
-                </div>
-            )}
 
             <MapContainer
                 center={center}

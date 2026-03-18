@@ -20,6 +20,15 @@ import { useMojigangas } from "@/hooks/useMojigangas";
 import T from "@/lib/i18n/T";
 import Link from "next/link";
 
+const gridVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
+};
+const cardVariants = {
+    hidden: { opacity: 0, y: 16 },
+    visible: { opacity: 1, y: 0 },
+};
+
 export default function CatalogoPage() {
     const { mojigangas, loading, error } = useMojigangas();
 
@@ -68,19 +77,26 @@ export default function CatalogoPage() {
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <motion.div
+                        variants={gridVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+                    >
                         {mojigangas.map((m, index) => (
-                            <Link href={`/catalogo/${m.id}`} key={m.id}>
-                                <PolaroidCard
-                                    id={m.id}
-                                    nombre={m.nombre}
-                                    imagenUrl={m.imagen_url}
-                                    año={m.año}
-                                    index={index}
-                                />
-                            </Link>
+                            <motion.div key={m.id} variants={cardVariants}>
+                                <Link href={`/catalogo/${m.id}`}>
+                                    <PolaroidCard
+                                        id={m.id}
+                                        nombre={m.nombre}
+                                        imagenUrl={m.imagen_url}
+                                        año={m.año}
+                                        index={index}
+                                    />
+                                </Link>
+                            </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
                 )}
             </section>
 

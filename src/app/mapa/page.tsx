@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { motion, AnimatePresence } from "framer-motion";
 import EventDetail from "@/components/mapa/EventDetail";
 import type { MapEvent } from "@/components/mapa/MapView";
 import { useDesfiles } from "@/hooks/useDesfiles";
@@ -154,6 +155,13 @@ export default function MapaPage() {
                         </div>
                     </div>
 
+                    {/* Admin mode banner */}
+                    {adminMode && (
+                        <div className="flex items-center gap-1.5 bg-fiesta-ink text-white font-heading text-[11px] px-3 py-1.5 rounded-full shadow-md pointer-events-none whitespace-nowrap w-fit">
+                            <span>✏️ Toca el mapa para agregar un punto</span>
+                        </div>
+                    )}
+
                     {/* Active Route Details Card */}
                     {activeRecorrido && !adminMode && (
                         <div className="bg-white/95 backdrop-blur-md rounded-xl p-3 shadow-hard-sm border border-gray-100/50 animate-in fade-in slide-in-from-top-2">
@@ -224,50 +232,79 @@ export default function MapaPage() {
             />
 
             {/* New Route Modal (Admin Only) */}
-            {showNewRouteModal && (
-                <div className="fixed inset-0 z-[600] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in">
-                    <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-hard-lg">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="font-heading text-lg text-fiesta-ink">Crear Recorrido</h2>
-                            <button onClick={() => setShowNewRouteModal(false)} className="text-gray-400 hover:text-fiesta-ink"><X size={20} /></button>
-                        </div>
-                        <form onSubmit={handleCreateRoute} className="flex flex-col gap-3">
-                            <input required placeholder="Nombre del evento" value={newRoute.nombre} onChange={e => setNewRoute({...newRoute, nombre: e.target.value})} className="input-field text-sm" />
-                            <input required placeholder="Motivo (ej. Preserva de tradición)" value={newRoute.motivo} onChange={e => setNewRoute({...newRoute, motivo: e.target.value})} className="input-field text-sm" />
-                            <div className="grid grid-cols-2 gap-2 w-full">
-                                <input required placeholder="Origen (ej. Templo)" value={newRoute.origen} onChange={e => setNewRoute({...newRoute, origen: e.target.value})} className="input-field text-sm w-full min-w-0" />
-                                <input required placeholder="Destino" value={newRoute.destino} onChange={e => setNewRoute({...newRoute, destino: e.target.value})} className="input-field text-sm w-full min-w-0" />
+            <AnimatePresence>
+                {showNewRouteModal && (
+                    <motion.div
+                        key="route-modal-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="fixed inset-0 z-[600] flex items-center justify-center p-4"
+                        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+                        onClick={(e) => { if (e.target === e.currentTarget) setShowNewRouteModal(false); }}
+                    >
+                        <motion.div
+                            key="route-modal"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 0.25, ease: "easeOut" }}
+                            className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-hard-lg"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="font-heading text-lg text-fiesta-ink">Crear Recorrido</h2>
+                                <button onClick={() => setShowNewRouteModal(false)} className="text-gray-400 hover:text-fiesta-ink"><X size={20} /></button>
                             </div>
-                            
-                            <button 
-                                type="button" 
-                                onClick={() => setShowDatePicker(true)}
-                                className={`flex items-center gap-2 justify-between w-full input-field text-sm text-left transition ${!newRoute.fecha_hora ? "text-gray-400" : "text-fiesta-ink font-medium"}`}
-                            >
-                                <span className="flex items-center gap-2 truncate">
-                                    <Clock size={16} className={newRoute.fecha_hora ? "text-fiesta-cyan" : "text-gray-400"} />
-                                    {newRoute.fecha_hora 
-                                        ? `${new Date(newRoute.fecha_hora).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' })} — ${newRoute.duracion}`
-                                        : "Seleccionar fecha y hora"}
-                                </span>
-                            </button>
+                            <form onSubmit={handleCreateRoute} className="flex flex-col gap-3">
+                                <input required placeholder="Nombre del evento" value={newRoute.nombre} onChange={e => setNewRoute({...newRoute, nombre: e.target.value})} className="input-field text-sm" />
+                                <input required placeholder="Motivo (ej. Preserva de tradición)" value={newRoute.motivo} onChange={e => setNewRoute({...newRoute, motivo: e.target.value})} className="input-field text-sm" />
+                                <div className="grid grid-cols-2 gap-2 w-full">
+                                    <input required placeholder="Origen (ej. Templo)" value={newRoute.origen} onChange={e => setNewRoute({...newRoute, origen: e.target.value})} className="input-field text-sm w-full min-w-0" />
+                                    <input required placeholder="Destino" value={newRoute.destino} onChange={e => setNewRoute({...newRoute, destino: e.target.value})} className="input-field text-sm w-full min-w-0" />
+                                </div>
+                                
+                                <button 
+                                    type="button" 
+                                    onClick={() => setShowDatePicker(true)}
+                                    className={`flex items-center gap-2 justify-between w-full input-field text-sm text-left transition ${!newRoute.fecha_hora ? "text-gray-400" : "text-fiesta-ink font-medium"}`}
+                                >
+                                    <span className="flex items-center gap-2 truncate">
+                                        <Clock size={16} className={newRoute.fecha_hora ? "text-fiesta-cyan" : "text-gray-400"} />
+                                        {newRoute.fecha_hora 
+                                            ? `${new Date(newRoute.fecha_hora).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' })} — ${newRoute.duracion}`
+                                            : "Seleccionar fecha y hora"}
+                                    </span>
+                                </button>
 
-                            <button type="submit" disabled={isCreating || !newRoute.fecha_hora} className="btn-primary mt-2 flex justify-center disabled:opacity-50 disabled:cursor-not-allowed">
-                                {isCreating ? "Creando..." : "Crear Recorrido"}
-                            </button>
-                        </form>
-                    </div>
+                                <button type="submit" disabled={isCreating || !newRoute.fecha_hora} className="btn-primary mt-2 flex justify-center disabled:opacity-50 disabled:cursor-not-allowed">
+                                    {isCreating ? "Creando..." : "Crear Recorrido"}
+                                </button>
+                            </form>
+                        </motion.div>
 
-                    {showDatePicker && (
-                        <div className="fixed inset-0 z-[700] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-                            <DateTimePicker 
-                                onConfirm={handleDateSelect}
-                                onClose={() => setShowDatePicker(false)} 
-                            />
-                        </div>
-                    )}
-                </div>
-            )}
+                        <AnimatePresence>
+                            {showDatePicker && (
+                                <motion.div
+                                    key="date-picker-backdrop"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="fixed inset-0 z-[700] flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
+                                    onClick={(e) => { if (e.target === e.currentTarget) setShowDatePicker(false); }}
+                                >
+                                    <DateTimePicker 
+                                        onConfirm={handleDateSelect}
+                                        onClose={() => setShowDatePicker(false)} 
+                                    />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </main>
     );
 }
