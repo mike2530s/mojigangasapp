@@ -39,8 +39,8 @@ export default function Header() {
                 </span>
             </Link>
 
-            {/* ── Quick-access pills — Artesanos & Cultura ── */}
-            <div className="flex items-center gap-1.5 flex-1 justify-center">
+            {/* ── Quick-access pills — solo visible en tablet/desktop (en móvil están en BottomNav) ── */}
+            <div className="hidden sm:flex items-center gap-1.5 flex-1 justify-center">
                 {QUICK_LINKS.map(({ href, labelEs, icon: Icon, accent }) => {
                     const isActive = pathname === href || pathname?.startsWith(href + "/");
                     return (

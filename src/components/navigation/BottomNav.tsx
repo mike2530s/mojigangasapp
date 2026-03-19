@@ -91,9 +91,9 @@ function NavItem({ href, labelEs, icon: Icon, color, showBadge }: NavItemProps) 
                 )}
             </span>
 
-            {/* Label */}
+            {/* Label — oculto en móvil pequeño, visible en sm+ */}
             <span className={`relative z-10 text-[9px] font-heading uppercase tracking-wide
-                            transition-colors duration-200 leading-none
+                            transition-colors duration-200 leading-none hidden sm:block
                             lg:text-xs lg:normal-case lg:tracking-normal
                             ${isActive ? "text-white" : "text-white/40"}`}>
                 {label}
