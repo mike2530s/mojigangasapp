@@ -11,6 +11,9 @@ import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Space_Grotesk, Archivo_Black, Permanent_Marker } from "next/font/google";
 import BottomNav from "@/components/navigation/BottomNav";
 import ConsentBanner from "@/components/ConsentBanner";
+import SplashScreen from "@/components/ui/SplashScreen";
+import ScrollToTop from "@/components/ui/ScrollToTop";
+import FAB from "@/components/ui/FAB";
 import { LangProvider } from "@/lib/i18n/LangContext";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { Toaster } from "sonner";
@@ -84,7 +87,10 @@ export default function RootLayout({
         <LangProvider>
           <AuthProvider>
             <Toaster position="top-center" richColors />
+            <SplashScreen />
             {children}
+            <FAB />
+            <ScrollToTop />
             <BottomNav />
             <ConsentBanner />
           </AuthProvider>

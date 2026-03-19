@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Music, Star, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import T from "@/lib/i18n/T";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 export default function LeonesXichuPage() {
     const router = useRouter();
@@ -49,7 +50,18 @@ export default function LeonesXichuPage() {
                      style={{ clipPath: "polygon(0 100%, 100% 100%, 100% 0, 0 100%)" }} />
             </div>
 
-            <div className="px-5 pt-8 max-w-2xl mx-auto space-y-12">
+            <div className="px-5 pt-4 pb-0 max-w-2xl mx-auto">
+                <Breadcrumbs
+                    items={[
+                        { label: "Inicio", href: "/home" },
+                        { label: "Nuestra Cultura", href: "/acerca-de" },
+                        { label: "Leones de Xichú" },
+                    ]}
+                    className="text-gray-400"
+                />
+            </div>
+
+            <div className="px-5 pt-6 max-w-2xl mx-auto space-y-12">
                 {/* ── HISTORIA DE LA COLABORACIÓN ── */}
                 <section>
                     <div className="flex items-center gap-2 mb-4 text-mexican-pink">

@@ -21,6 +21,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { useArtesanos } from "@/hooks/useArtesanos";
 import type { Mojiganga } from "@/lib/supabase/mojigangas";
 import T from "@/lib/i18n/T";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 /* ── Offline fallback mojigangas for "a1" (Taller Linares) ── */
 const FALLBACK_MOJIGANGAS: Record<string, Mojiganga[]> = {
@@ -196,6 +197,15 @@ export default function ArtesanoProfilePage() {
                 transition={{ duration: 0.5, delay: 0.15 }}
                 className="px-5 py-6"
             >
+                {/* Breadcrumbs */}
+                <Breadcrumbs
+                    className="mb-4 text-gray-500"
+                    items={[
+                        { label: "Inicio", href: "/home" },
+                        { label: "Artesanos", href: "/artesanos" },
+                        { label: data.nombre },
+                    ]}
+                />
                 {/* Biografia */}
                 {data.descripcion && (
                     <section className="mb-8">

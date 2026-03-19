@@ -20,6 +20,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { useMojigangas } from "@/hooks/useMojigangas";
 import T from "@/lib/i18n/T";
 import PhotoCarousel from "@/components/catalogo/PhotoCarousel";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { toast } from "sonner";
 
 export default function MojigangaDetailPage() {
@@ -129,6 +130,16 @@ export default function MojigangaDetailPage() {
                 transition={{ duration: 0.5, delay: 0.15 }}
                 className="px-5 py-6 pb-24"
             >
+                {/* Breadcrumbs */}
+                <Breadcrumbs
+                    className="mb-5 text-gray-500"
+                    items={[
+                        { label: "Inicio", href: "/home" },
+                        { label: "Catálogo", href: "/catalogo" },
+                        { label: mojiganga.nombre },
+                    ]}
+                />
+
                 {/* Meta info */}
                 <div className="flex flex-wrap gap-4 mb-6">
                     <div className="flex items-center gap-1.5 text-sm text-gray-600 font-body">
