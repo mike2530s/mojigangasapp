@@ -37,12 +37,12 @@ function useNewContentBadge(storageKey: string, timestamps: string[]) {
 }
 
 const NAV_ITEMS = [
-    { href: "/home",      labelEs: "Inicio",    icon: Home,     color: "text-fiesta-yellow", badgeKey: null },
-    { href: "/historias", labelEs: "Historias", icon: BookOpen, color: "text-fiesta-cyan",   badgeKey: "seen_historias" },
-    { href: "/mapa",      labelEs: "Mapa",      icon: Map,      color: "text-fiesta-cyan",   badgeKey: null },
-    { href: "/catalogo",  labelEs: "Catálogo",  icon: Layers,   color: "text-fiesta-yellow", badgeKey: "seen_catalogo" },
-    { href: "/artesanos", labelEs: "Artesanos", icon: Palette,  color: "text-mexican-pink",  badgeKey: null },
-    { href: "/acerca-de", labelEs: "Cultura",   icon: Heart,    color: "text-mexican-pink",  badgeKey: null },
+    { href: "/home",      labelEs: "Inicio",    icon: Home,     color: "text-fiesta-yellow", badgeKey: null, id: "nav-home"      },
+    { href: "/historias", labelEs: "Historias", icon: BookOpen, color: "text-fiesta-cyan",   badgeKey: "seen_historias",    id: "nav-historias" },
+    { href: "/mapa",      labelEs: "Mapa",      icon: Map,      color: "text-fiesta-cyan",   badgeKey: null, id: "nav-mapa"      },
+    { href: "/catalogo",  labelEs: "Catálogo",  icon: Layers,   color: "text-fiesta-yellow", badgeKey: "seen_catalogo",     id: "nav-catalogo"  },
+    { href: "/artesanos", labelEs: "Artesanos", icon: Palette,  color: "text-mexican-pink",  badgeKey: null, id: "nav-artesanos" },
+    { href: "/acerca-de", labelEs: "Cultura",   icon: Heart,    color: "text-mexican-pink",  badgeKey: null, id: "nav-cultura"   },
 ] as const;
 
 type NavItemProps = {
@@ -51,9 +51,10 @@ type NavItemProps = {
     icon: typeof Home;
     color: string;
     showBadge?: boolean;
+    id?: string;
 };
 
-function NavItem({ href, labelEs, icon: Icon, color, showBadge }: NavItemProps) {
+function NavItem({ href, labelEs, icon: Icon, color, showBadge, id }: NavItemProps) {
     const pathname = usePathname();
     const label = useText(labelEs);
     const isActive = pathname === href || pathname?.startsWith(href + "/");
@@ -61,6 +62,7 @@ function NavItem({ href, labelEs, icon: Icon, color, showBadge }: NavItemProps) 
     return (
         <Link
             href={href}
+            id={id}
             aria-label={label}
             aria-current={isActive ? "page" : undefined}
             className="relative flex flex-col items-center justify-center gap-0.5

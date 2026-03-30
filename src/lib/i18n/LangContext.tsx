@@ -27,10 +27,21 @@ const LangContext = createContext<LangContextValue>({
 export function LangProvider({ children }: { children: ReactNode }) {
     const [lang, setLangState] = useState<Lang>("es");
 
-    /* Restore language on mount */
+    /* Restore language on mount — prioridad:
+     * 1. Preferencia guardada manualmente por el usuario
+     * 2. Idioma del dispositivo (navigator.language)
+     * 3. Español por defecto
+     */
     useEffect(() => {
         const saved = localStorage.getItem("lang") as Lang | null;
-        if (saved === "es" || saved === "en") setLangState(saved);
+        if (saved === "es" || saved === "en") {
+            setLangState(saved);
+        } else {
+            // Detectar idioma del sistema
+            const browserLang = navigator.language || "es";
+            const detected: Lang = browserLang.toLowerCase().startsWith("es") ? "es" : "en";
+            setLangState(detected);
+        }
     }, []);
 
     const setLang = (newLang: Lang) => {

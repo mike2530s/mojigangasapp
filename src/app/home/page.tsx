@@ -86,7 +86,7 @@ export default function HomePage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                    <Link href="/taller" className="bg-fiesta-ink rounded-card p-5 shadow-hard-sm group">
+                    <Link id="link-taller" href="/taller" className="bg-fiesta-ink rounded-card p-5 shadow-hard-sm group">
                         <span className="text-fiesta-yellow font-heading text-xs uppercase tracking-widest"><T>Proceso</T></span>
                         <h4 className="text-white font-heading text-lg mt-1 group-hover:text-fiesta-yellow transition-colors"><T>El Taller</T></h4>
                         <p className="text-gray-400 text-xs font-body mt-1"><T>Cómo se crea una mojiganga</T></p>

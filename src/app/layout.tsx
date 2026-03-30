@@ -18,6 +18,9 @@ import { LangProvider } from "@/lib/i18n/LangContext";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { Toaster } from "sonner";
 import "./globals.css";
+import "driver.js/dist/driver.css";
+import "@/lib/onboarding/onboarding.css";
+
 
 const playfair = Playfair_Display({
   subsets: ["latin"],

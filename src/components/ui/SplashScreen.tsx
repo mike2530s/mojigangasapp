@@ -1,14 +1,18 @@
 /**
- * SplashScreen — Pantalla de bienvenida (onboarding)
+ * SplashScreen — Pantalla de bienvenida (solo primera visita)
  *
- * Solo se muestra la primera vez que el usuario visita la app.
- * Usa localStorage para recordarlo. Se cierra con animación suave.
+ * - Solo se muestra la primera vez que el usuario entra a la app.
+ * - Al cerrar, dispara el tour de visitante (Driver.js, 7 pasos).
+ * - Usa localStorage para no repetirse.
+ * - El idioma se detecta automáticamente del dispositivo.
  */
 
 "use client";
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useOnboarding, isGuestDone } from "@/lib/onboarding/useOnboarding";
+import { useTranslation } from "@/lib/i18n/LangContext";
 
 const LETTER_VARIANTS = {
     hidden: { opacity: 0, y: 30 },
@@ -22,15 +26,36 @@ const LETTER_VARIANTS = {
 const TITLE = "Mojigangas".split("");
 
 export default function SplashScreen() {
-    const [show, setShow] = useState(true);
+    const [show, setShow] = useState(false);
+    const { startGuestTour } = useOnboarding();
+    const { lang } = useTranslation();
 
-    const handleClose = () => setShow(false);
-
-    // Auto-cierre después de 5 segundos
+    // Verificar si es primera visita (solo en cliente)
     useEffect(() => {
-        const t = setTimeout(handleClose, 5000);
-        return () => clearTimeout(t);
+        if (typeof window === "undefined") return;
+        if (!isGuestDone()) {
+            setShow(true);
+        }
     }, []);
+
+    const handleExplore = async () => {
+        setShow(false);
+        // Pequeño delay para que el splash termine de salir antes de iniciar el tour
+        setTimeout(() => {
+            startGuestTour(lang);
+        }, 650);
+    };
+
+    // Auto-cierre después de 8 segundos si el usuario no hace nada
+    useEffect(() => {
+        if (!show) return;
+        const t = setTimeout(handleExplore, 8000);
+        return () => clearTimeout(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [show]);
+
+    const ctaText = lang === "es" ? "Explorar →" : "Explore →";
+    const subtitleText = lang === "es" ? "Tradición Viva de México" : "Living Tradition of Mexico";
 
     return (
         <AnimatePresence>
@@ -86,7 +111,7 @@ export default function SplashScreen() {
                         transition={{ delay: 1.0, duration: 0.5 }}
                         className="font-heading text-xs tracking-[0.3em] uppercase text-fiesta-yellow mb-10"
                     >
-                        Tradición Viva de México
+                        {subtitleText}
                     </motion.p>
 
                     {/* CTA */}
@@ -94,13 +119,23 @@ export default function SplashScreen() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 1.3, duration: 0.4 }}
-                        onClick={handleClose}
+                        onClick={handleExplore}
                         className="bg-mexican-pink text-white font-heading text-sm uppercase tracking-widest
                                    px-8 py-3 rounded-full shadow-[0_4px_20px_rgba(255,0,92,0.5)]
                                    hover:shadow-[0_6px_30px_rgba(255,0,92,0.7)] transition-shadow"
                     >
-                        Explorar →
+                        {ctaText}
                     </motion.button>
+
+                    {/* Indicador de auto-inicio */}
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 2.0, duration: 0.5 }}
+                        className="absolute bottom-16 text-white/30 font-body text-xs"
+                    >
+                        {lang === "es" ? "Se iniciará el tutorial automáticamente..." : "Tutorial will start automatically..."}
+                    </motion.p>
 
                     {/* Decoración inferior */}
                     <motion.div

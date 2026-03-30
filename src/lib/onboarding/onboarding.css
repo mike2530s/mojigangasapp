@@ -1,0 +1,150 @@
+/* ═══════════════════════════════════════════════════════
+ * 🎭 Mojigangas — Driver.js Popover Overrides
+ *
+ * Adapta el estilo de Driver.js al sistema de diseño del proyecto.
+ * Todas las variables CSS provienen de globals.css
+ * ═══════════════════════════════════════════════════════ */
+
+/* ── Overlay de fondo ─────────────────────────────────── */
+#driver-page-overlay {
+    background: rgba(26, 26, 26, 0.78) !important;
+    backdrop-filter: blur(2px);
+}
+
+/* ── Highlight del elemento apuntado ─────────────────── */
+.driver-active-element,
+.driver-active-element:focus-visible {
+    outline: 3px solid #FF005C !important;
+    outline-offset: 4px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 0 0 6px rgba(255, 0, 92, 0.2) !important;
+}
+
+/* ── Popover contenedor ───────────────────────────────── */
+.mojiganga-tour-popover.driver-popover {
+    background-color: #1A1A1A !important;
+    color: #F8F5E6 !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 20px !important;
+    box-shadow:
+        6px 6px 0px #FF005C,
+        0 20px 50px rgba(0, 0, 0, 0.6) !important;
+    padding: 20px 22px 18px !important;
+    max-width: 320px !important;
+    font-family: "Space Grotesk", sans-serif !important;
+}
+
+/* ── Flecha del popover ───────────────────────────────── */
+.mojiganga-tour-popover .driver-popover-arrow {
+    border-color: #1A1A1A !important;
+}
+
+/* ── Título ───────────────────────────────────────────── */
+.mojiganga-tour-popover .driver-popover-title {
+    font-family: "Archivo Black", sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 900 !important;
+    color: #FFD600 !important;
+    letter-spacing: 0.02em !important;
+    margin-bottom: 8px !important;
+    line-height: 1.2 !important;
+}
+
+/* ── Descripción ──────────────────────────────────────── */
+.mojiganga-tour-popover .driver-popover-description {
+    font-family: "Space Grotesk", sans-serif !important;
+    font-size: 13px !important;
+    color: rgba(248, 245, 230, 0.85) !important;
+    line-height: 1.55 !important;
+    margin-bottom: 0 !important;
+}
+
+/* ── Progreso ─────────────────────────────────────────── */
+.mojiganga-tour-popover .driver-popover-progress-text {
+    font-family: "Archivo Black", sans-serif !important;
+    font-size: 10px !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    color: rgba(248, 245, 230, 0.45) !important;
+}
+
+/* ── Footer (botones) ─────────────────────────────────── */
+.mojiganga-tour-popover .driver-popover-footer {
+    margin-top: 16px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding-top: 14px !important;
+    gap: 8px !important;
+}
+
+/* ── Botón base ───────────────────────────────────────── */
+.mojiganga-tour-popover .driver-popover-prev-btn,
+.mojiganga-tour-popover .driver-popover-next-btn,
+.mojiganga-tour-popover .driver-popover-close-btn {
+    font-family: "Archivo Black", sans-serif !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    border-radius: 999px !important;
+    padding: 8px 18px !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    border: none !important;
+    outline: none !important;
+}
+
+/* ── Botón "Siguiente" / "Listo" — rosa mexicano ─────── */
+.mojiganga-tour-popover .driver-popover-next-btn {
+    background-color: #FF005C !important;
+    color: #fff !important;
+    box-shadow: 3px 3px 0px rgba(255, 0, 92, 0.4) !important;
+}
+
+.mojiganga-tour-popover .driver-popover-next-btn:hover {
+    box-shadow: 4px 4px 0px rgba(255, 0, 92, 0.6) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* ── Botón "Anterior" — outline sutil ────────────────── */
+.mojiganga-tour-popover .driver-popover-prev-btn {
+    background-color: transparent !important;
+    color: rgba(248, 245, 230, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.mojiganga-tour-popover .driver-popover-prev-btn:hover {
+    color: #F8F5E6 !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.mojiganga-tour-popover .driver-popover-prev-btn:disabled {
+    opacity: 0.25 !important;
+    cursor: not-allowed !important;
+}
+
+/* ── Botón "X" cerrar ─────────────────────────────────── */
+.mojiganga-tour-popover .driver-popover-close-btn {
+    padding: 4px 8px !important;
+    background: transparent !important;
+    color: rgba(248, 245, 230, 0.4) !important;
+    font-size: 16px !important;
+}
+
+.mojiganga-tour-popover .driver-popover-close-btn:hover {
+    color: #F8F5E6 !important;
+}
+
+/* ── Barra decorativa superior del popover ───────────── */
+.mojiganga-tour-popover::before {
+    content: "";
+    display: block;
+    height: 3px;
+    border-radius: 20px 20px 0 0;
+    margin: -20px -22px 16px -22px;
+    background: repeating-linear-gradient(
+        90deg,
+        #FF005C 0px,   #FF005C 20px,
+        #FFD600 20px,  #FFD600 40px,
+        #00E5FF 40px,  #00E5FF 60px,
+        #9C27B0 60px,  #9C27B0 80px
+    );
+}

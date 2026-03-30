@@ -11,10 +11,15 @@ import {
     type AcercaDeInfo, type Colaboracion, type Patrocinador
 } from "@/lib/supabase/acerca-de";
 import T from "@/lib/i18n/T";
+import { useOnboarding } from "@/lib/onboarding/useOnboarding";
+import { useTranslation } from "@/lib/i18n/LangContext";
+import { GraduationCap } from "lucide-react";
 
 export default function AcercaDePage() {
     const router = useRouter();
-    const { isAdmin } = useAuth();
+    const { isAdmin, user } = useAuth();
+    const { startGuestTour, startUserTour, resetTour } = useOnboarding();
+    const { lang } = useTranslation();
     
     const [loading, setLoading] = useState(true);
     const [acercaDe, setAcercaDe] = useState<AcercaDeInfo | null>(null);
@@ -216,6 +221,43 @@ export default function AcercaDePage() {
                     </div>
 
                 </div>
+            </div>
+
+            {/* ── VER TUTORIAL ── */}
+            <div className="px-5 py-10 text-center">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="max-w-xs mx-auto"
+                >
+                    <div className="w-14 h-14 rounded-full bg-mexican-pink/10 flex items-center justify-center mx-auto mb-4">
+                        <GraduationCap size={28} className="text-mexican-pink" />
+                    </div>
+                    <h3 className="font-heading text-lg text-fiesta-ink mb-2">
+                        <T>Ver el tutorial nuevamente</T>
+                    </h3>
+                    <p className="text-gray-500 text-sm font-body mb-5">
+                        <T>¿Quieres que te expliquemos las secciones de la app?</T>
+                    </p>
+                    <motion.button
+                        whileTap={{ scale: 0.96 }}
+                        onClick={() => {
+                            resetTour();
+                            setTimeout(() => {
+                                if (user) {
+                                    startUserTour(user.id, lang);
+                                } else {
+                                    startGuestTour(lang);
+                                }
+                            }, 100);
+                        }}
+                        className="btn-primary w-full justify-center"
+                    >
+                        <GraduationCap size={16} />
+                        <T>Iniciar tutorial</T>
+                    </motion.button>
+                </motion.div>
             </div>
 
         </main>

@@ -67,6 +67,7 @@ export default function Header() {
             <div className="flex items-center gap-2 flex-shrink-0">
                 {/* Búsqueda */}
                 <button
+                    id="btn-search"
                     onClick={() => setSearchOpen(true)}
                     aria-label="Buscar"
                     className="w-8 h-8 rounded-full bg-white border-2 border-fiesta-ink

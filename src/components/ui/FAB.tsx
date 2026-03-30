@@ -58,6 +58,7 @@ export default function FAB() {
 
             {/* Main button */}
             <motion.button
+                id="fab-btn"
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setOpen(prev => !prev)}
                 aria-label={open ? "Cerrar menú" : "Subir contenido"}
