@@ -175,7 +175,10 @@ export default function HistoriasPage() {
 
             {/* Modal de Historia Destacada */}
             {selectedStoryId && (
-                <div className="fixed inset-0 z-[500] bg-black/90 flex items-center justify-center p-4">
+                <div
+                    className="fixed inset-0 z-[500] bg-black/90 flex items-center justify-center p-4"
+                    onClick={() => setSelectedStoryId(null)}
+                >
                     {(() => {
                         const story = historias.find(h => h.id === selectedStoryId);
                         if (!story) {
@@ -186,6 +189,7 @@ export default function HistoriasPage() {
                             <motion.div
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
+                                onClick={(e) => e.stopPropagation()}
                                 className="bg-paper-white w-full max-w-sm rounded-3xl overflow-hidden relative shadow-2xl"
                             >
                                 <button
