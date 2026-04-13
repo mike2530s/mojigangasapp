@@ -10,10 +10,10 @@ export default function LeonesXichuPage() {
     const router = useRouter();
 
     const fotos = [
-        "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=80",
-        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&q=80",
-        "https://images.unsplash.com/photo-1493225457124-a1a2a5f5f924?w=600&q=80",
-        "https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?w=600&q=80",
+        "https://nktouapjberliqbsyiqf.supabase.co/storage/v1/object/public/fotos-mojigangas/fotos-pdf/foto_09.jpeg",
+        "https://nktouapjberliqbsyiqf.supabase.co/storage/v1/object/public/fotos-mojigangas/fotos-pdf/foto_12.jpeg",
+        "https://nktouapjberliqbsyiqf.supabase.co/storage/v1/object/public/fotos-mojigangas/fotos-pdf/foto_14.jpeg",
+        "https://nktouapjberliqbsyiqf.supabase.co/storage/v1/object/public/fotos-mojigangas/fotos-pdf/foto_16.jpeg",
     ];
 
     return (

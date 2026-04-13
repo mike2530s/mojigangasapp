@@ -15,25 +15,25 @@ const PROCESS_STEPS = [
     {
         step: 1,
         titleEs: "Estructura de Carrizo",
-        imageUrl: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&q=80",
+        imageUrl: "https://nktouapjberliqbsyiqf.supabase.co/storage/v1/object/public/fotos-mojigangas/fotos-pdf/foto_20.jpeg",
         descEs: "Se construye un esqueleto ligero con varas de carrizo atadas con alambre. Esta estructura define la forma y tamaño de la mojiganga, que puede medir hasta 3.5 metros.",
     },
     {
         step: 2,
         titleEs: "Modelado con Papel",
-        imageUrl: "https://images.unsplash.com/photo-1560707303-4e980ce876ad?w=400&q=80",
+        imageUrl: "https://nktouapjberliqbsyiqf.supabase.co/storage/v1/object/public/fotos-mojigangas/fotos-pdf/foto_21.jpeg",
         descEs: "Se aplican capas de papel periódico impregnado con engrudo. Cada capa se deja secar antes de aplicar la siguiente para dar rigidez.",
     },
     {
         step: 3,
         titleEs: "Pintura y Detalle",
-        imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80",
+        imageUrl: "https://nktouapjberliqbsyiqf.supabase.co/storage/v1/object/public/fotos-mojigangas/fotos-pdf/foto_22.jpeg",
         descEs: "Se pinta con colores vibrantes: esmaltes, acrílicos y pigmentos naturales. Los detalles del rostro definen la personalidad del personaje.",
     },
     {
         step: 4,
         titleEs: "Vestimenta Final",
-        imageUrl: "https://images.unsplash.com/photo-1604265179512-4c34e3ee5c28?w=400&q=80",
+        imageUrl: "https://nktouapjberliqbsyiqf.supabase.co/storage/v1/object/public/fotos-mojigangas/fotos-pdf/foto_23.jpeg",
         descEs: "Se viste con telas, encajes y adornos. La ropa refleja la identidad del personaje: novia, diablo, catrina o personaje histórico.",
     },
 ];
