@@ -14,6 +14,7 @@ import ConsentBanner from "@/components/ConsentBanner";
 import SplashScreen from "@/components/ui/SplashScreen";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import FAB from "@/components/ui/FAB";
+import { ServiceWorkerInit } from "@/components/ui/ServiceWorkerInit";
 import { LangProvider } from "@/lib/i18n/LangContext";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { Toaster } from "sonner";
@@ -87,6 +88,7 @@ export default function RootLayout({
       `}
     >
       <body className="font-body antialiased bg-paper-white text-fiesta-ink">
+        <ServiceWorkerInit />
         <LangProvider>
           <AuthProvider>
             <Toaster position="top-center" richColors />

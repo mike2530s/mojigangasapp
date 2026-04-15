@@ -1,13 +1,15 @@
 /**
  * 📖 useHistorias — Hook para historias de la comunidad
  *
- * Fetches historias desde Supabase con fallback offline.
+ * Fetches historias desde Supabase con REALTIME updates.
+ * Las historias nuevas/actualizadas aparecen al instante.
  */
 
 "use client";
 
 import { useState, useEffect } from "react";
 import { getHistorias, type HistoriaComunidad } from "@/lib/supabase/historias";
+import { useRealtimeChanges } from "@/lib/supabase/realtime";
 
 const FALLBACK_DATA: HistoriaComunidad[] = [
     {
@@ -34,10 +36,13 @@ export function useHistorias() {
     const [data, setData] = useState<HistoriaComunidad[]>(FALLBACK_DATA);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isLive, setIsLive] = useState(false);
 
     useEffect(() => {
         let mounted = true;
-        async function fetch() {
+
+        /* 1️⃣ Cargar historias iniciales */
+        async function fetchInitial() {
             try {
                 const historias = await getHistorias();
                 if (mounted && historias.length > 0) {
@@ -46,15 +51,47 @@ export function useHistorias() {
             } catch (err) {
                 if (mounted) {
                     setError(err instanceof Error ? err.message : "Error al cargar historias");
-                    console.warn("Supabase historias fetch failed, using fallback:", err);
+                    console.warn("[useHistorias] Fetch failed, using fallback:", err);
                 }
             } finally {
                 if (mounted) setLoading(false);
             }
         }
-        fetch();
-        return () => { mounted = false; };
+
+        fetchInitial();
+
+        /* 2️⃣ Suscribirse a nuevas historias en tiempo real */
+        const realtime = useRealtimeChanges<HistoriaComunidad>(
+            "historias_comunidad",
+            (updatedHistoria) => {
+                if (!mounted) return;
+
+                setData((prev) => {
+                    const exists = prev.find((h) => h.id === updatedHistoria.id);
+                    if (exists) {
+                        /* Historia existente fue actualizada (ej: más likes) */
+                        return prev.map((h) =>
+                            h.id === updatedHistoria.id ? updatedHistoria : h
+                        );
+                    } else {
+                        /* Nueva historia — aparece al inicio del feed */
+                        return [updatedHistoria, ...prev];
+                    }
+                });
+
+                /* Indicador visual de actualización en vivo */
+                setIsLive(true);
+                setTimeout(() => setIsLive(false), 3000);
+            }
+        );
+
+        realtime.start();
+
+        return () => {
+            mounted = false;
+            realtime.stop();
+        };
     }, []);
 
-    return { historias: data, loading, error };
+    return { historias: data, loading, error, isLive };
 }

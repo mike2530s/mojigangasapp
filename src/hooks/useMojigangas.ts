@@ -1,14 +1,15 @@
 /**
  * 🎭 useMojigangas — Hook para datos del catálogo
  *
- * Fetches mojigangas desde Supabase con estado de loading/error.
- * Fallback a datos locales si Supabase falla (offline-first).
+ * Fetches mojigangas desde Supabase con REALTIME updates.
+ * Escucha cambios en tiempo real + fallback offline mode.
  */
 
 "use client";
 
 import { useState, useEffect } from "react";
 import { getMojigangas, type Mojiganga } from "@/lib/supabase/mojigangas";
+import { useRealtimeChanges } from "@/lib/supabase/realtime";
 
 /* Datos fallback para modo offline o si la tabla está vacía */
 const FALLBACK_DATA: Mojiganga[] = [
@@ -48,10 +49,13 @@ export function useMojigangas() {
     const [data, setData] = useState<Mojiganga[]>(FALLBACK_DATA);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isLive, setIsLive] = useState(false);
 
     useEffect(() => {
         let mounted = true;
-        async function fetch() {
+
+        /* 1️⃣ Cargar datos iniciales */
+        async function fetchInitial() {
             try {
                 const mojigangas = await getMojigangas();
                 if (mounted && mojigangas.length > 0) {
@@ -60,15 +64,46 @@ export function useMojigangas() {
             } catch (err) {
                 if (mounted) {
                     setError(err instanceof Error ? err.message : "Error al cargar datos");
-                    console.warn("Supabase fetch failed, using fallback data:", err);
+                    console.warn("[useMojigangas] Fetch failed, using fallback:", err);
                 }
             } finally {
                 if (mounted) setLoading(false);
             }
         }
-        fetch();
-        return () => { mounted = false; };
+
+        fetchInitial();
+
+        /* 2️⃣ Suscribirse a cambios en tiempo real */
+        const realtime = useRealtimeChanges<Mojiganga>(
+            "mojigangas",
+            (updatedMojiganga) => {
+                if (!mounted) return;
+                
+                setData((prev) => {
+                    const exists = prev.find((m) => m.id === updatedMojiganga.id);
+                    if (exists) {
+                        /* Actualizar mojiganga existente */
+                        return prev.map((m) =>
+                            m.id === updatedMojiganga.id ? updatedMojiganga : m
+                        );
+                    } else {
+                        /* Agregar mojiganga nueva */
+                        return [updatedMojiganga, ...prev];
+                    }
+                });
+
+                setIsLive(true);
+                setTimeout(() => setIsLive(false), 3000);
+            }
+        );
+
+        realtime.start();
+
+        return () => {
+            mounted = false;
+            realtime.stop();
+        };
     }, []);
 
-    return { mojigangas: data, loading, error };
+    return { mojigangas: data, loading, error, isLive };
 }

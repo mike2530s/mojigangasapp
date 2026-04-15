@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mojigangas - Sin Conexión</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: "Space Grotesk", sans-serif;
+      background: linear-gradient(135deg, #F8F5E6 0%, #FFE5F0 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      text-align: center;
+      max-width: 400px;
+      background: white;
+      border-radius: 16px;
+      padding: 40px 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #FF005C;
+      font-size: 28px;
+      margin-bottom: 10px;
+      font-family: "Archivo Black", sans-serif;
+    }
+    
+    p {
+      color: #666;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    
+    .icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-family: "Space Grotesk", sans-serif;
+      transition: all 0.3s;
+    }
+    
+    .btn-retry {
+      background: #FF005C;
+      color: white;
+      font-weight: bold;
+    }
+    
+    .btn-retry:hover {
+      background: #E00050;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(255, 0, 92, 0.3);
+    }
+    
+    .btn-home {
+      background: #F0F0F0;
+      color: #333;
+    }
+    
+    .btn-home:hover {
+      background: #E0E0E0;
+    }
+    
+    .hint {
+      color: #999;
+      font-size: 12px;
+      margin-top: 20px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    <h1>Sin Conexión</h1>
+    <p>
+      No tenemos conexión a internet, pero puedes seguir explorando el contenido que ya has visto.
+    </p>
+    
+    <div class="actions">
+      <button class="btn-retry" onclick="window.location.reload()">
+        🔄 Reintentar Conexión
+      </button>
+      <button class="btn-home" onclick="window.location.href = '/home'">
+        🏠 Ir al Home
+      </button>
+    </div>
+    
+    <p class="hint">
+      El contenido cacheado seguirá disponible sin conexión.
+    </p>
+  </div>
+
+  <script>
+    /* Intentar reconectar cada 5 segundos */
+    setInterval(() => {
+      fetch("/ping", { method: "HEAD" })
+        .then(() => window.location.reload())
+        .catch(() => {/* Still offline */});
+    }, 5000);
+  </script>
+</body>
+</html>
